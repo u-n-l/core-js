@@ -1,4 +1,4 @@
-geohash
+UNL CORE JS
 =======
 
 Functions to convert a [geohash](http://en.wikipedia.org/wiki/Geohash) to/from a latitude/longitude
