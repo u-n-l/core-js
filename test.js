@@ -14,11 +14,13 @@ if (typeof window == 'undefined') { // node
 describe('unl-core', function() {
 
     it('encodes Jutland',     function() { Geohash.encode(57.648, 10.410, 6).should.equal('u4pruy'); });
-    it('encodes Jutland floor 1',     function() { Geohash.encode(57.648, 10.410, 6, {elevation: 5}).should.equal('u4pruy@5'); });
+    it('encodes Jutland floor 5',     function() { Geohash.encode(57.648, 10.410, 6, {elevation: 5}).should.equal('u4pruy@5'); });
+    it('encodes Jutland floor -2',     function() { Geohash.encode(57.648, 10.410, 6, {elevation: -2}).should.equal('u4pruy@-2'); });
     it('encodes Jutland heightincm 87',     function() { Geohash.encode(57.648, 10.410, 6, {elevation: 87, elevationType:'heightincm'}).should.equal('u4pruy#87'); });
     it('decodes Jutland',     function() { Geohash.decode('u4pruy').should.deep.equal({ lat: 57.648, lon: 10.410, elevation: 0, elevationType: 'floor' }); });
     it('decodes Jutland floor 3',     function() { Geohash.decode('u4pruy@3').should.deep.equal({ lat: 57.648, lon: 10.410, elevation: 3, elevationType: 'floor' }); });
     it('decodes Jutland floor 0',     function() { Geohash.decode('u4pruy@0').should.deep.equal({ lat: 57.648, lon: 10.410, elevation: 0, elevationType: 'floor' }); });
+    it('decodes Jutland floor -2',     function() { Geohash.decode('u4pruy@-2').should.deep.equal({ lat: 57.648, lon: 10.410, elevation: -2, elevationType: 'floor' }); });
     it('decodes Jutland heightincm 87',     function() { Geohash.decode('u4pruy#87').should.deep.equal({ lat: 57.648, lon: 10.410, elevation: 87, elevationType: 'heightincm' }); });
     it('decodes Jutland heightincm 0',     function() { Geohash.decode('u4pruy#0').should.deep.equal({ lat: 57.648, lon: 10.410, elevation: 0, elevationType: 'heightincm' }); });
     it('encodes Curitiba',    function() { Geohash.encode(-25.38262, -49.26561, 8).should.equal('6gkzwgjz'); });
@@ -29,7 +31,9 @@ describe('unl-core', function() {
     it('adjacent north',  function() { Geohash.adjacent('ezzz@5', 'n').should.equal('gbpb@5'); });
     it('fetches neighbours',  function() { Geohash.neighbours('ezzz').should.deep.equal({ n:'gbpb', ne:'u000', e:'spbp', se:'spbn', s:'ezzy', sw:'ezzw', w:'ezzx', nw:'gbp8' }); });
     it('fetches neighbours 5th floor',  function() { Geohash.neighbours('ezzz@5').should.deep.equal({ n:'gbpb@5', ne:'u000@5', e:'spbp@5', se:'spbn@5', s:'ezzy@5', sw:'ezzw@5', w:'ezzx@5', nw:'gbp8@5' }); });
+    it('fetches neighbours -2 floor',  function() { Geohash.neighbours('ezzz@-2').should.deep.equal({ n:'gbpb@-2', ne:'u000@-2', e:'spbp@-2', se:'spbn@-2', s:'ezzy@-2', sw:'ezzw@-2', w:'ezzx@-2', nw:'gbp8@-2' }); });
     it('fetches neighbours above 87cm',  function() { Geohash.neighbours('ezzz#87').should.deep.equal({ n:'gbpb#87', ne:'u000#87', e:'spbp#87', se:'spbn#87', s:'ezzy#87', sw:'ezzw#87', w:'ezzx#87', nw:'gbp8#87' }); });
+    it('fetches neighbours below 5cm',  function() { Geohash.neighbours('ezzz#-5').should.deep.equal({ n:'gbpb#-5', ne:'u000#-5', e:'spbp#-5', se:'spbn#-5', s:'ezzy#-5', sw:'ezzw#-5', w:'ezzx#-5', nw:'gbp8#-5' }); });
     it('matches geohash.org', function() { Geohash.encode(37.25, 123.75, 12).should.equal('wy85bj0hbp21'); });
     it('excludes elevation Curitiba 5th floor', function() { Geohash.excludeElevation('6gkzwgjz@5').should.deep.equal({geohash:'6gkzwgjz', elevation: 5, elevationType: 'floor'}); });
     it('excludes elevation Curitiba above 87cm', function() { Geohash.excludeElevation('6gkzwgjz#87').should.deep.equal({geohash:'6gkzwgjz', elevation: 87, elevationType: 'heightincm'}); });
