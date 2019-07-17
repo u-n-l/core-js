@@ -3,7 +3,7 @@
   "description": "Gustavo Niemeyer’s geocoding system with elevation",
   "homepage": "https://unl.global",
   "author": "Emre Turan",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "type": "module",
   "main": "unl-core.js",
