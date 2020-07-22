@@ -1,36 +1,36 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-/* Geohash encoding/decoding and associated functions   (c) Emre Turan 2019 / MIT Licence  */
+/* LocationId encoding/decoding and associated functions   (c) Emre Turan 2019 / MIT Licence  */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 "use strict";
 
 /**
- * Geohash: Gustavo Niemeyer’s geocoding system.
+ * LocationId: UNL’s geocoding system.
  */
-var Geohash = {};
-Geohash.base32 = "0123456789bcdefghjkmnpqrstuvwxyz";
+var LocationId = {};
+LocationId.base32 = "0123456789bcdefghjkmnpqrstuvwxyz";
 
 /**
- * Encodes latitude/longitude to geohash, either to specified precision or to automatically
+ * Encodes latitude/longitude to locationId, either to specified precision or to automatically
  * evaluated precision.
  *
  * @param   {number} lat - Latitude in degrees.
  * @param   {number} lon - Longitude in degrees.
- * @param   {number} [precision] - Number of characters in resulting geohash.
+ * @param   {number} [precision] - Number of characters in resulting locationId.
  * @param   {object} [options] - Number of options. Including elevation
- * @returns {string} Geohash of supplied latitude/longitude.
- * @throws  Invalid geohash.
+ * @returns {string} LocationId of supplied latitude/longitude.
+ * @throws  Invalid coordinates.
  *
  * @example
- *     var geohash = Geohash.encode(52.205, 0.119, 7); // => 'u120fxw'
- *     var geohash = Geohash.encode(52.205, 0.119, 7, { elevation: 9, elevationType: 'floor'}); // => 'u120fxw@9'
+ *     var locationId = LocationId.encode(52.205, 0.119, 7); // => 'u120fxw'
+ *     var locationId = LocationId.encode(52.205, 0.119, 7, { elevation: 9, elevationType: 'floor'}); // => 'u120fxw@9'
  */
-Geohash.encode = function (lat, lon, precision, options) {
+LocationId.encode = function (lat, lon, precision, options) {
   // infer precision?
   if (typeof precision == "undefined") {
-    // refine geohash until it matches precision of supplied lat/lon
+    // refine locationId until it matches precision of supplied lat/lon
     for (var p = 1; p <= 12; p++) {
-      var hash = Geohash.encode(lat, lon, p);
-      var posn = Geohash.decode(hash);
+      var hash = LocationId.encode(lat, lon, p);
+      var posn = LocationId.decode(hash);
       if (posn.lat == lat && posn.lon == lon) return hash;
     }
     precision = 12; // set to maximum
@@ -41,19 +41,19 @@ Geohash.encode = function (lat, lon, precision, options) {
   precision = Number(precision);
 
   if (isNaN(lat) || isNaN(lon) || isNaN(precision))
-    throw new Error("Invalid geohash");
+    throw new Error("Invalid coordinates");
 
   var idx = 0; // index into base32 map
   var bit = 0; // each char holds 5 bits
   var evenBit = true;
-  var geohash = "";
+  var locationId = "";
 
   var latMin = -90,
     latMax = 90;
   var lonMin = -180,
     lonMax = 180;
 
-  while (geohash.length < precision) {
+  while (locationId.length < precision) {
     if (evenBit) {
       // bisect E-W longitude
       var lonMid = (lonMin + lonMax) / 2;
@@ -79,7 +79,7 @@ Geohash.encode = function (lat, lon, precision, options) {
 
     if (++bit == 5) {
       // 5 bits gives us a character: append it and start over
-      geohash += Geohash.base32.charAt(idx);
+      locationId += LocationId.base32.charAt(idx);
       bit = 0;
       idx = 0;
     }
@@ -88,25 +88,25 @@ Geohash.encode = function (lat, lon, precision, options) {
   var elevation = (options && options.elevation) || 0;
   var elevationType = (options && options.elevationType) || "floor";
 
-  return Geohash.appendElevation(geohash, elevation, elevationType);
+  return LocationId.appendElevation(locationId, elevation, elevationType);
 };
 
 /**
- * Decode geohash to latitude/longitude and elevation (location is approximate centre of geohash cell,
+ * Decode locationId to latitude/longitude and elevation (location is approximate centre of locationId cell,
  *     to reasonable precision).
  *
- * @param   {string} geohash - Geohash string to be converted to latitude/longitude.
- * @returns {{lat:number, lon:number, elevation:number, elevationType:string}} (Center of and elevation) geohashed location.
- * @throws  Invalid geohash.
+ * @param   {string} locationId - LocationId string to be converted to latitude/longitude.
+ * @returns {{lat:number, lon:number, elevation:number, elevationType:string}} Center of locationId and elevation.
+ * @throws  Invalid locationId.
  *
  * @example
- *     var latlon = Geohash.decode('u120fxw'); // => { lat: 52.205, lon: 0.1188, elevation:0, elevationType:floor }
- *     var latlon = Geohash.decode('u120fxw@3'); // => { lat: 52.205, lon: 0.1188, elevation:3, elevationType:floor }
- *     var latlon = Geohash.decode('u120fxw#87'); // => { lat: 52.205, lon: 0.1188, elevation:87, elevationType:heightincm }
+ *     var latlon = LocationId.decode('u120fxw'); // => { lat: 52.205, lon: 0.1188, elevation:0, elevationType:floor }
+ *     var latlon = LocationId.decode('u120fxw@3'); // => { lat: 52.205, lon: 0.1188, elevation:3, elevationType:floor }
+ *     var latlon = LocationId.decode('u120fxw#87'); // => { lat: 52.205, lon: 0.1188, elevation:87, elevationType:heightincm }
  */
-Geohash.decode = function (geohash) {
-  var geohashWithElevation = Geohash.excludeElevation(geohash);
-  var bounds = Geohash.bounds(geohashWithElevation.geohash); // <-- the hard work
+LocationId.decode = function (locationId) {
+  var locationIdWithElevation = LocationId.excludeElevation(locationId);
+  var bounds = LocationId.bounds(locationIdWithElevation.locationId); // <-- the hard work
   // now just determine the centre of the cell...
 
   var latMin = bounds.sw.lat,
@@ -125,22 +125,22 @@ Geohash.decode = function (geohash) {
   return {
     lat: Number(lat),
     lon: Number(lon),
-    elevation: Number(geohashWithElevation.elevation),
-    elevationType: geohashWithElevation.elevationType,
+    elevation: Number(locationIdWithElevation.elevation),
+    elevationType: locationIdWithElevation.elevationType,
   };
 };
 
 /**
- * Returns SW/NE latitude/longitude bounds of specified geohash.
+ * Returns SW/NE latitude/longitude bounds of specified locationId.
  *
- * @param   {string} geohash - Cell that bounds are required of.
+ * @param   {string} locationId - Cell that bounds are required of.
  * @returns {{sw: {lat: number, lon: number}, ne: {lat: number, lon: number}}, elevation: number, elevationType: string}
- * @throws  Invalid geohash.
+ * @throws  Invalid locationId.
  */
-Geohash.bounds = function (geohash) {
-  var geohashWithElevation = Geohash.excludeElevation(geohash);
+LocationId.bounds = function (locationId) {
+  var locationIdWithElevation = LocationId.excludeElevation(locationId);
 
-  var geohashWithoutElevation = geohashWithElevation.geohash;
+  var locationIdWithoutElevation = locationIdWithElevation.locationId;
 
   var evenBit = true;
   var latMin = -90,
@@ -148,10 +148,10 @@ Geohash.bounds = function (geohash) {
   var lonMin = -180,
     lonMax = 180;
 
-  for (var i = 0; i < geohashWithoutElevation.length; i++) {
-    var chr = geohashWithoutElevation.charAt(i);
-    var idx = Geohash.base32.indexOf(chr);
-    if (idx == -1) throw new Error("Invalid geohash");
+  for (var i = 0; i < locationIdWithoutElevation.length; i++) {
+    var chr = locationIdWithoutElevation.charAt(i);
+    var idx = LocationId.base32.indexOf(chr);
+    if (idx == -1) throw new Error("Invalid locationId");
 
     for (var n = 4; n >= 0; n--) {
       var bitN = (idx >> n) & 1;
@@ -179,8 +179,8 @@ Geohash.bounds = function (geohash) {
   var bounds = {
     sw: { lat: latMin, lon: lonMin },
     ne: { lat: latMax, lon: lonMax },
-    elevation: geohashWithElevation.elevation,
-    elevationType: geohashWithElevation.elevationType,
+    elevation: locationIdWithElevation.elevation,
+    elevationType: locationIdWithElevation.elevationType,
   };
 
   return bounds;
@@ -189,21 +189,23 @@ Geohash.bounds = function (geohash) {
 /**
  * Determines adjacent cell in given direction.
  *
- * @param   geohash - Cell to which adjacent cell is required.
- * @param   direction - Direction from geohash (N/S/E/W).
+ * @param   locationId - Cell to which adjacent cell is required.
+ * @param   direction - Direction from locationId (N/S/E/W).
  * @returns {string} Geocode of adjacent cell.
- * @throws  Invalid geohash.
+ * @throws  Invalid locationId.
  */
-Geohash.adjacent = function (geohash, direction) {
+LocationId.adjacent = function (locationId, direction) {
   // based on github.com/davetroy/geohash-js
 
-  var geohashWithoutElevation = Geohash.excludeElevation(geohash).geohash;
-  var elevation = Geohash.excludeElevation(geohash).elevation;
-  var elevationType = Geohash.excludeElevation(geohash).elevationType;
+  var locationIdWithoutElevation = LocationId.excludeElevation(locationId)
+    .locationId;
+  var elevation = LocationId.excludeElevation(locationId).elevation;
+  var elevationType = LocationId.excludeElevation(locationId).elevationType;
 
   direction = direction.toLowerCase();
 
-  if (geohashWithoutElevation.length === 0) throw new Error("Invalid geohash");
+  if (locationIdWithoutElevation.length === 0)
+    throw new Error("Invalid locationId");
   if ("nsew".indexOf(direction) == -1) throw new Error("Invalid direction");
 
   var neighbour = {
@@ -219,76 +221,80 @@ Geohash.adjacent = function (geohash, direction) {
     w: ["0145hjnp", "028b"],
   };
 
-  var lastCh = geohashWithoutElevation.slice(-1); // last character of hash
-  var parent = geohashWithoutElevation.slice(0, -1); // hash without last character
+  var lastCh = locationIdWithoutElevation.slice(-1); // last character of hash
+  var parent = locationIdWithoutElevation.slice(0, -1); // hash without last character
 
-  var type = geohashWithoutElevation.length % 2;
+  var type = locationIdWithoutElevation.length % 2;
 
   // check for edge-cases which don't share common prefix
   if (border[direction][type].indexOf(lastCh) != -1 && parent !== "") {
-    parent = Geohash.adjacent(parent, direction);
+    parent = LocationId.adjacent(parent, direction);
   }
 
   // append letter for direction to parent
-  var nextGeohash =
-    parent + Geohash.base32.charAt(neighbour[direction][type].indexOf(lastCh));
+  var nextLocationId =
+    parent +
+    LocationId.base32.charAt(neighbour[direction][type].indexOf(lastCh));
 
   if (elevation && elevationType)
-    return Geohash.appendElevation(nextGeohash, elevation, elevationType);
+    return LocationId.appendElevation(nextLocationId, elevation, elevationType);
 
-  return nextGeohash;
+  return nextLocationId;
 };
 
 /**
- * Returns all 8 adjacent cells to specified geohash.
+ * Returns all 8 adjacent cells to specified locationId.
  *
- * @param   {string} geohash - Geohash neighbours are required of.
+ * @param   {string} locationId - LocationId neighbours are required of.
  * @returns {{n,ne,e,se,s,sw,w,nw: string}}
- * @throws  Invalid geohash.
+ * @throws  Invalid locationId.
  */
-Geohash.neighbours = function (geohash) {
+LocationId.neighbours = function (locationId) {
   return {
-    n: Geohash.adjacent(geohash, "n"),
-    ne: Geohash.adjacent(Geohash.adjacent(geohash, "n"), "e"),
-    e: Geohash.adjacent(geohash, "e"),
-    se: Geohash.adjacent(Geohash.adjacent(geohash, "s"), "e"),
-    s: Geohash.adjacent(geohash, "s"),
-    sw: Geohash.adjacent(Geohash.adjacent(geohash, "s"), "w"),
-    w: Geohash.adjacent(geohash, "w"),
-    nw: Geohash.adjacent(Geohash.adjacent(geohash, "n"), "w"),
+    n: LocationId.adjacent(locationId, "n"),
+    ne: LocationId.adjacent(LocationId.adjacent(locationId, "n"), "e"),
+    e: LocationId.adjacent(locationId, "e"),
+    se: LocationId.adjacent(LocationId.adjacent(locationId, "s"), "e"),
+    s: LocationId.adjacent(locationId, "s"),
+    sw: LocationId.adjacent(LocationId.adjacent(locationId, "s"), "w"),
+    w: LocationId.adjacent(locationId, "w"),
+    nw: LocationId.adjacent(LocationId.adjacent(locationId, "n"), "w"),
   };
 };
 
 /**
- * Returns geohash and elevation properties.
+ * Returns locationId and elevation properties.
  * It is mainly used by internal functions
  *
- * @param   {string} geohashWithElevation - Geohash with elevation chars.
- * @returns {geohash: string, elevation: Number, elevationType: string }
- * @throws  Invalid geohash.
+ * @param   {string} locationIdWithElevation - LocationId with elevation chars.
+ * @returns {locationId: string, elevation: Number, elevationType: string }
+ * @throws  Invalid locationId.
  */
-Geohash.excludeElevation = function (geohashWithElevation) {
-  if (geohashWithElevation.length < 0) throw new Error("Invalid geohash");
-  if (geohashWithElevation.includes("#") && geohashWithElevation.includes("@"))
-    throw new Error("Invalid geohash");
+LocationId.excludeElevation = function (locationIdWithElevation) {
+  if (locationIdWithElevation.length < 0) throw new Error("Invalid locationId");
+  if (
+    locationIdWithElevation.includes("#") &&
+    locationIdWithElevation.includes("@")
+  )
+    throw new Error("Invalid locationId");
 
-  var geohashWithoutElevation = geohashWithElevation.toLocaleLowerCase();
+  var locationIdWithoutElevation = locationIdWithElevation.toLocaleLowerCase();
   var elevationType = "floor";
   var elevation = 0;
 
-  if (geohashWithElevation.includes("#")) {
-    geohashWithoutElevation = geohashWithElevation.split("#")[0];
-    elevation = geohashWithElevation.split("#")[1];
+  if (locationIdWithElevation.includes("#")) {
+    locationIdWithoutElevation = locationIdWithElevation.split("#")[0];
+    elevation = locationIdWithElevation.split("#")[1];
     elevationType = "heightincm";
   }
 
-  if (geohashWithElevation.includes("@")) {
-    geohashWithoutElevation = geohashWithElevation.split("@")[0];
-    elevation = geohashWithElevation.split("@")[1];
+  if (locationIdWithElevation.includes("@")) {
+    locationIdWithoutElevation = locationIdWithElevation.split("@")[0];
+    elevation = locationIdWithElevation.split("@")[1];
   }
 
   return {
-    geohash: geohashWithoutElevation,
+    locationId: locationIdWithoutElevation,
     elevation: Number(elevation),
     elevationType,
   };
@@ -298,24 +304,25 @@ Geohash.excludeElevation = function (geohashWithElevation) {
  * Adds elevation chars and elevation
  * It is mainly used by internal functions
  *
- * @param   {string} geohashWithoutElevation - Geohash without elevation chars.
+ * @param   {string} locationIdWithoutElevation - LocationId without elevation chars.
  * @param   {string} elevation - Height of the elevation.
  * @param   {string} elevationType - floor | heightincm.
  * @returns {string}
- * @throws  Invalid geohash.
+ * @throws  Invalid locationId.
  */
-Geohash.appendElevation = function (
-  geohashWithoutElevation,
+LocationId.appendElevation = function (
+  locationIdWithoutElevation,
   elevation,
   elevationType
 ) {
-  if (geohashWithoutElevation.length < 0) throw new Error("Invalid geohash");
-  if (elevation === 0) return geohashWithoutElevation;
+  if (locationIdWithoutElevation.length < 0)
+    throw new Error("Invalid locationId");
+  if (elevation === 0) return locationIdWithoutElevation;
   var elevationChar = "@";
   if (elevationType === "heightincm") elevationChar = "#";
-  return `${geohashWithoutElevation}${elevationChar}${elevation}`;
+  return `${locationIdWithoutElevation}${elevationChar}${elevation}`;
 };
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-if (typeof module != "undefined" && module.exports) module.exports = Geohash; // CommonJS, node.js
+if (typeof module != "undefined" && module.exports) module.exports = LocationId; // CommonJS, node.js
