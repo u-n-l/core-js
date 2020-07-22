@@ -191,7 +191,7 @@ LocationId.bounds = function (locationId) {
  *
  * @param   locationId - Cell to which adjacent cell is required.
  * @param   direction - Direction from locationId (N/S/E/W).
- * @returns {string} Geocode of adjacent cell.
+ * @returns {string} LocationId of adjacent cell.
  * @throws  Invalid locationId.
  */
 LocationId.adjacent = function (locationId, direction) {

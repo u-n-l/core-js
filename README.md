@@ -1,8 +1,8 @@
 # UNL CORE JS
 
-Functions to convert a locationId to/from a latitude/longitude
-point, and to determine bounds of a locationId cell and find neighbours of a locationId with elevation
-features (floor and heightincm)
+Functions to convert a locationId to/from a latitude/longitude point,
+and to determine bounds of a locationId cell and find neighbours of a locationId
+with elevation features (floor and heightincm)
 
 ## API
 
@@ -23,7 +23,7 @@ Note to obtain neighbours as an array, you can use
     const neighboursObj = LocationId.neighbours(locationId);
     const neighboursArr = Object.keys(neighboursObj).map(n => neighboursObj[n]);
 
-The parent of a geocode is simply `geocode.slice(0, -1)`.
+The parent of a locationId is simply `locationId.slice(0, -1)`.
 
 If you want the locationId converted from Base32 to Base4, you can e.g.:
 
