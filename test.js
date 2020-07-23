@@ -205,6 +205,20 @@ describe("unl-core", function () {
       "6gkzwgjz#87"
     );
   });
+  it("retrieves grid lines", function () {
+    LocationId.gridLines(
+      {
+        sw: {
+          lat: 46.77210936378606,
+          lon: 23.595436614661565,
+        },
+        ne: {
+          lat: 46.77227194246396,
+          lon: 23.59560827603795,
+        },
+      },
+      9
+    ).length.should.equal(7);
+  });
 });
-
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */

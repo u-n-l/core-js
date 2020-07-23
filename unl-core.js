@@ -323,6 +323,56 @@ LocationId.appendElevation = function (
   return `${locationIdWithoutElevation}${elevationChar}${elevation}`;
 };
 
+/**
+ * Returns grid lines for specified SW/NE latitude/longitude bounds and precision.
+ *
+ * @param   {sw: {lat: number, lon: number}, ne: {lat: number, lon: number}} bounds - The bound whithin to return the grid lines.
+ * @param   {number} [precision] - Number of characters to conisder for the locationId of a grid cell.
+ * @returns {[[number, number],[number, number]][]}
+ */
+LocationId.gridLines = function (bounds, precision) {
+  const lines = [];
+
+  const lonMin = bounds.sw.lon;
+  const lonMax = bounds.ne.lon;
+
+  const latMin = bounds.sw.lat;
+  const latMax = bounds.ne.lat;
+
+  const swCellLocationId = LocationId.encode(
+    bounds.sw.lat,
+    bounds.sw.lon,
+    precision
+  );
+  const swCellBounds = LocationId.bounds(swCellLocationId);
+
+  const latStart = swCellBounds.ne.lat;
+  const lonStart = swCellBounds.ne.lon;
+
+  const latDiff = swCellBounds.ne.lat - swCellBounds.sw.lat;
+  const lonDiff = swCellBounds.ne.lon - swCellBounds.sw.lon;
+
+  let latitude = latStart;
+  while (latitude <= latMax) {
+    lines.push([
+      [lonMin, latitude],
+      [lonMax, latitude],
+    ]);
+    latitude += latDiff;
+  }
+
+  let longitude = lonStart;
+  while (longitude <= lonMax) {
+    lines.push([
+      [longitude, latMin],
+      [longitude, latMax],
+    ]);
+    longitude += lonDiff;
+  }
+
+  return lines;
+};
+
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 if (typeof module != "undefined" && module.exports) module.exports = LocationId; // CommonJS, node.js
