@@ -68,3 +68,10 @@ More information (with interactive conversion) at
 [www.movable-type.co.uk/scripts/locationId.html](http://www.movable-type.co.uk/scripts/locationId.html).
 
 Full JsDoc at [www.movable-type.co.uk/scripts/js/unl-core/docs/LocationId.html](http://www.movable-type.co.uk/scripts/js/unl-core/docs/LocationId.html).
+
+## Upgrade to version 2.0 from version 1.0
+
+In version 2.0 we renamed the concept of geohash to locationId. In order to upgrade from version 1.0 you need to:
+
+- Import `LocationId` instead of `Geohash` from `unl-core`
+- Get `locationId` instead of `geohash` from the answer of methods which returned an object with `geohash` parameter
