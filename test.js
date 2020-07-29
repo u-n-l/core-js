@@ -43,9 +43,18 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: 0,
       elevationType: "floor",
-      bounds: LocationId.bounds(
-        LocationId.excludeElevation("u4pruy").locationId
-      ),
+      bounds: {
+        elevation: 0,
+        elevationType: "floor",
+        ne: {
+          lat: 57.6507568359375,
+          lon: 10.4150390625,
+        },
+        sw: {
+          lat: 57.645263671875,
+          lon: 10.404052734375,
+        },
+      },
     });
   });
   it("decodes Jutland floor 3", function () {
@@ -54,9 +63,18 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: 3,
       elevationType: "floor",
-      bounds: LocationId.bounds(
-        LocationId.excludeElevation("u4pruy@3").locationId
-      ),
+      bounds: {
+        elevation: 0,
+        elevationType: "floor",
+        ne: {
+          lat: 57.6507568359375,
+          lon: 10.4150390625,
+        },
+        sw: {
+          lat: 57.645263671875,
+          lon: 10.404052734375,
+        },
+      },
     });
   });
   it("decodes Jutland floor 0", function () {
@@ -65,9 +83,18 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: 0,
       elevationType: "floor",
-      bounds: LocationId.bounds(
-        LocationId.excludeElevation("u4pruy@0").locationId
-      ),
+      bounds: {
+        elevation: 0,
+        elevationType: "floor",
+        ne: {
+          lat: 57.6507568359375,
+          lon: 10.4150390625,
+        },
+        sw: {
+          lat: 57.645263671875,
+          lon: 10.404052734375,
+        },
+      },
     });
   });
   it("decodes Jutland floor -2", function () {
@@ -76,9 +103,18 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: -2,
       elevationType: "floor",
-      bounds: LocationId.bounds(
-        LocationId.excludeElevation("u4pruy@-2").locationId
-      ),
+      bounds: {
+        elevation: 0,
+        elevationType: "floor",
+        ne: {
+          lat: 57.6507568359375,
+          lon: 10.4150390625,
+        },
+        sw: {
+          lat: 57.645263671875,
+          lon: 10.404052734375,
+        },
+      },
     });
   });
   it("decodes Jutland heightincm 87", function () {
@@ -87,9 +123,18 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: 87,
       elevationType: "heightincm",
-      bounds: LocationId.bounds(
-        LocationId.excludeElevation("u4pruy#87").locationId
-      ),
+      bounds: {
+        elevation: 0,
+        elevationType: "floor",
+        ne: {
+          lat: 57.6507568359375,
+          lon: 10.4150390625,
+        },
+        sw: {
+          lat: 57.645263671875,
+          lon: 10.404052734375,
+        },
+      },
     });
   });
   it("decodes Jutland heightincm 0", function () {
@@ -98,9 +143,18 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: 0,
       elevationType: "heightincm",
-      bounds: LocationId.bounds(
-        LocationId.excludeElevation("u4pruy#0").locationId
-      ),
+      bounds: {
+        elevation: 0,
+        elevationType: "floor",
+        ne: {
+          lat: 57.6507568359375,
+          lon: 10.4150390625,
+        },
+        sw: {
+          lat: 57.645263671875,
+          lon: 10.404052734375,
+        },
+      },
     });
   });
   it("encodes Curitiba", function () {
@@ -112,9 +166,18 @@ describe("unl-core", function () {
       lon: -49.26561,
       elevation: 0,
       elevationType: "floor",
-      bounds: LocationId.bounds(
-        LocationId.excludeElevation("6gkzwgjz").locationId
-      ),
+      bounds: {
+        elevation: 0,
+        elevationType: "floor",
+        ne: {
+          lat: -25.382537841796875,
+          lon: -49.26544189453125,
+        },
+        sw: {
+          lat: -25.382709503173828,
+          lon: -49.265785217285156,
+        },
+      },
     });
   });
   it("decodes Curitiba", function () {
@@ -123,9 +186,18 @@ describe("unl-core", function () {
       lon: -49.26561,
       elevation: 0,
       elevationType: "floor",
-      bounds: LocationId.bounds(
-        LocationId.excludeElevation("6gkzwgjz").locationId
-      ),
+      bounds: {
+        elevation: 0,
+        elevationType: "floor",
+        ne: {
+          lat: -25.382537841796875,
+          lon: -49.26544189453125,
+        },
+        sw: {
+          lat: -25.382709503173828,
+          lon: -49.265785217285156,
+        },
+      },
     });
   });
   it("decodes Curitiba floor 5", function () {
@@ -134,9 +206,18 @@ describe("unl-core", function () {
       lon: -49.26561,
       elevation: 5,
       elevationType: "floor",
-      bounds: LocationId.bounds(
-        LocationId.excludeElevation("6gkzwgjz@5").locationId
-      ),
+      bounds: {
+        elevation: 0,
+        elevationType: "floor",
+        ne: {
+          lat: -25.382537841796875,
+          lon: -49.26544189453125,
+        },
+        sw: {
+          lat: -25.382709503173828,
+          lon: -49.265785217285156,
+        },
+      },
     });
   });
   it("decodes Curitiba heightincm 90", function () {
@@ -145,9 +226,18 @@ describe("unl-core", function () {
       lon: -49.26561,
       elevation: 90,
       elevationType: "heightincm",
-      bounds: LocationId.bounds(
-        LocationId.excludeElevation("6gkzwgjz#90").locationId
-      ),
+      bounds: {
+        elevation: 0,
+        elevationType: "floor",
+        ne: {
+          lat: -25.382537841796875,
+          lon: -49.26544189453125,
+        },
+        sw: {
+          lat: -25.382709503173828,
+          lon: -49.265785217285156,
+        },
+      },
     });
   });
   it("adjacent north", function () {
