@@ -352,25 +352,40 @@ LocationId.gridLines = function (bounds, precision) {
   const latStart = swCellBounds.ne.lat;
   const lonStart = swCellBounds.ne.lon;
 
-  const latDiff = swCellBounds.ne.lat - swCellBounds.sw.lat;
-  const lonDiff = swCellBounds.ne.lon - swCellBounds.sw.lon;
-
+  let currentCellLocationId = swCellLocationId;
+  let currentCellBounds = swCellBounds;
+  let currentCellLatDiff = 0;
   let latitude = latStart;
+
   while (latitude <= latMax) {
     lines.push([
       [lonMin, latitude],
       [lonMax, latitude],
     ]);
-    latitude += latDiff;
+
+    currentCellLocationId = LocationId.adjacent(currentCellLocationId, "n");
+    currentCellBounds = LocationId.bounds(currentCellLocationId);
+    currentCellLatDiff = currentCellBounds.ne.lat - latitude;
+
+    latitude += currentCellLatDiff;
   }
 
+  currentCellLocationId = swCellLocationId;
+  currentCellBounds = swCellBounds;
+  let currentCellLonDiff = 0;
   let longitude = lonStart;
+
   while (longitude <= lonMax) {
     lines.push([
       [longitude, latMin],
       [longitude, latMax],
     ]);
-    longitude += lonDiff;
+
+    currentCellLocationId = LocationId.adjacent(currentCellLocationId, "e");
+    currentCellBounds = LocationId.bounds(currentCellLocationId);
+    currentCellLonDiff = currentCellBounds.ne.lon - longitude;
+
+    longitude += currentCellLatDiff;
   }
 
   return lines;
