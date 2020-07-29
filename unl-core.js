@@ -28,12 +28,12 @@ LocationId.encode = function (lat, lon, precision, options) {
   // infer precision?
   if (typeof precision == "undefined") {
     // refine locationId until it matches precision of supplied lat/lon
-    for (var p = 1; p <= 12; p++) {
+    for (var p = 1; p <= 9; p++) {
       var hash = LocationId.encode(lat, lon, p);
       var posn = LocationId.decode(hash);
       if (posn.lat == lat && posn.lon == lon) return hash;
     }
-    precision = 12; // set to maximum
+    precision = 9; // set to maximum
   }
 
   lat = Number(lat);
@@ -328,7 +328,7 @@ LocationId.appendElevation = function (
  * Returns grid lines for specified SW/NE latitude/longitude bounds and precision.
  *
  * @param   {sw: {lat: number, lon: number}, ne: {lat: number, lon: number}} bounds - The bound whithin to return the grid lines.
- * @param   {number} precision - Number of characters to consider for the locationId of a grid cell.
+ * @param   {number} [precision] - Number of characters to consider for the locationId of a grid cell.
  * @returns {[[number, number],[number, number]][]}
  */
 LocationId.gridLines = function (bounds, precision) {
@@ -340,10 +340,12 @@ LocationId.gridLines = function (bounds, precision) {
   const latMin = bounds.sw.lat;
   const latMax = bounds.ne.lat;
 
+  const encodePrecision = typeof precision == "undefined" ? 9 : precision;
+
   const swCellLocationId = LocationId.encode(
     bounds.sw.lat,
     bounds.sw.lon,
-    precision
+    encodePrecision
   );
   const swCellBounds = LocationId.bounds(swCellLocationId);
 
