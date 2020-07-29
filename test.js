@@ -40,6 +40,9 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: 0,
       elevationType: "floor",
+      bounds: LocationId.bounds(
+        LocationId.excludeElevation("u4pruy").locationId
+      ),
     });
   });
   it("decodes Jutland floor 3", function () {
@@ -48,6 +51,9 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: 3,
       elevationType: "floor",
+      bounds: LocationId.bounds(
+        LocationId.excludeElevation("u4pruy@3").locationId
+      ),
     });
   });
   it("decodes Jutland floor 0", function () {
@@ -56,6 +62,9 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: 0,
       elevationType: "floor",
+      bounds: LocationId.bounds(
+        LocationId.excludeElevation("u4pruy@0").locationId
+      ),
     });
   });
   it("decodes Jutland floor -2", function () {
@@ -64,6 +73,9 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: -2,
       elevationType: "floor",
+      bounds: LocationId.bounds(
+        LocationId.excludeElevation("u4pruy@-2").locationId
+      ),
     });
   });
   it("decodes Jutland heightincm 87", function () {
@@ -72,6 +84,9 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: 87,
       elevationType: "heightincm",
+      bounds: LocationId.bounds(
+        LocationId.excludeElevation("u4pruy#87").locationId
+      ),
     });
   });
   it("decodes Jutland heightincm 0", function () {
@@ -80,6 +95,9 @@ describe("unl-core", function () {
       lon: 10.41,
       elevation: 0,
       elevationType: "heightincm",
+      bounds: LocationId.bounds(
+        LocationId.excludeElevation("u4pruy#0").locationId
+      ),
     });
   });
   it("encodes Curitiba", function () {
@@ -91,6 +109,9 @@ describe("unl-core", function () {
       lon: -49.26561,
       elevation: 0,
       elevationType: "floor",
+      bounds: LocationId.bounds(
+        LocationId.excludeElevation("6gkzwgjz").locationId
+      ),
     });
   });
   it("decodes Curitiba", function () {
@@ -99,6 +120,9 @@ describe("unl-core", function () {
       lon: -49.26561,
       elevation: 0,
       elevationType: "floor",
+      bounds: LocationId.bounds(
+        LocationId.excludeElevation("6gkzwgjz").locationId
+      ),
     });
   });
   it("decodes Curitiba floor 5", function () {
@@ -107,6 +131,9 @@ describe("unl-core", function () {
       lon: -49.26561,
       elevation: 5,
       elevationType: "floor",
+      bounds: LocationId.bounds(
+        LocationId.excludeElevation("6gkzwgjz@5").locationId
+      ),
     });
   });
   it("decodes Curitiba heightincm 90", function () {
@@ -115,6 +142,9 @@ describe("unl-core", function () {
       lon: -49.26561,
       elevation: 90,
       elevationType: "heightincm",
+      bounds: LocationId.bounds(
+        LocationId.excludeElevation("6gkzwgjz#90").locationId
+      ),
     });
   });
   it("adjacent north", function () {

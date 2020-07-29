@@ -127,6 +127,7 @@ LocationId.decode = function (locationId) {
     lon: Number(lon),
     elevation: Number(locationIdWithElevation.elevation),
     elevationType: locationIdWithElevation.elevationType,
+    bounds,
   };
 };
 
