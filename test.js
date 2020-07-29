@@ -34,6 +34,9 @@ describe("unl-core", function () {
       elevationType: "heightincm",
     }).should.equal("u4pruy#87");
   });
+  it("encodes Jutland with default precision 9", function () {
+    LocationId.encode(57.64, 10.41).should.equal("u4pruvh36");
+  });
   it("decodes Jutland", function () {
     LocationId.decode("u4pruy").should.deep.equal({
       lat: 57.648,
