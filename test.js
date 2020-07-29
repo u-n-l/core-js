@@ -34,6 +34,9 @@ describe("unl-core", function () {
       elevationType: "heightincm",
     }).should.equal("u4pruy#87");
   });
+  it("encodes Jutland with default precision 9", function () {
+    LocationId.encode(57.64, 10.41).should.equal("u4pruvh36");
+  });
   it("decodes Jutland", function () {
     LocationId.decode("u4pruy").should.deep.equal({
       lat: 57.648,
@@ -325,7 +328,7 @@ describe("unl-core", function () {
       "6gkzwgjz#87"
     );
   });
-  it("retrieves grid lines", function () {
+  it("retrieves grid lines with precision 9", function () {
     LocationId.gridLines(
       {
         sw: {
@@ -339,6 +342,33 @@ describe("unl-core", function () {
       },
       9
     ).length.should.equal(7);
+  });
+  it("retrieves grid lines with no precision specified (default 9)", function () {
+    LocationId.gridLines({
+      sw: {
+        lat: 46.77210936378606,
+        lon: 23.595436614661565,
+      },
+      ne: {
+        lat: 46.77227194246396,
+        lon: 23.59560827603795,
+      },
+    }).length.should.equal(7);
+  });
+  it("retrieves grid lines with precision 12", function () {
+    LocationId.gridLines(
+      {
+        sw: {
+          lat: 46.77210936378606,
+          lon: 23.595436614661565,
+        },
+        ne: {
+          lat: 46.77227194246396,
+          lon: 23.59560827603795,
+        },
+      },
+      12
+    ).length.should.equal(1481);
   });
 });
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
