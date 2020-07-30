@@ -96,13 +96,13 @@ LocationId.encode = function (lat, lon, precision, options) {
  *     to reasonable precision).
  *
  * @param   {string} locationId - LocationId string to be converted to latitude/longitude.
- * @returns {{lat:number, lon:number, elevation:number, elevationType:string}} Center of locationId and elevation.
+ * @returns {{lat:number, lon:number, elevation:number, elevationType:string, bounds:{sw: {lat: number, lon: number}, ne: {lat: number, lon: number}, elevation: number, elevationType: string}}} Center of locationId, elevation and SW/NE latitude/longitude bounds of the locationId.
  * @throws  Invalid locationId.
  *
  * @example
- *     var latlon = LocationId.decode('u120fxw'); // => { lat: 52.205, lon: 0.1188, elevation:0, elevationType:floor }
- *     var latlon = LocationId.decode('u120fxw@3'); // => { lat: 52.205, lon: 0.1188, elevation:3, elevationType:floor }
- *     var latlon = LocationId.decode('u120fxw#87'); // => { lat: 52.205, lon: 0.1188, elevation:87, elevationType:heightincm }
+ *     var latlon = LocationId.decode('u120fxw'); // => { lat: 52.205, lon: 0.1188, elevation:0, elevationType:floor, bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
+ *     var latlon = LocationId.decode('u120fxw@3'); // => { lat: 52.205, lon: 0.1188, elevation:3, elevationType:floor,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
+ *     var latlon = LocationId.decode('u120fxw#87'); // => { lat: 52.205, lon: 0.1188, elevation:87, elevationType:heightincm,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
  */
 LocationId.decode = function (locationId) {
   var locationIdWithElevation = LocationId.excludeElevation(locationId);
@@ -352,25 +352,34 @@ LocationId.gridLines = function (bounds, precision) {
   const latStart = swCellBounds.ne.lat;
   const lonStart = swCellBounds.ne.lon;
 
-  const latDiff = swCellBounds.ne.lat - swCellBounds.sw.lat;
-  const lonDiff = swCellBounds.ne.lon - swCellBounds.sw.lon;
+  let currentCellLocationId = swCellLocationId;
+  let currentCellBounds = swCellBounds;
+  let currentCellNorthLatitude = latStart;
 
-  let latitude = latStart;
-  while (latitude <= latMax) {
+  while (currentCellNorthLatitude <= latMax) {
     lines.push([
-      [lonMin, latitude],
-      [lonMax, latitude],
+      [lonMin, currentCellNorthLatitude],
+      [lonMax, currentCellNorthLatitude],
     ]);
-    latitude += latDiff;
+
+    currentCellLocationId = LocationId.adjacent(currentCellLocationId, "n");
+    currentCellBounds = LocationId.bounds(currentCellLocationId);
+    currentCellNorthLatitude = currentCellBounds.ne.lat;
   }
 
-  let longitude = lonStart;
-  while (longitude <= lonMax) {
+  currentCellLocationId = swCellLocationId;
+  currentCellBounds = swCellBounds;
+  let currentCellEastLongitude = lonStart;
+
+  while (currentCellEastLongitude <= lonMax) {
     lines.push([
-      [longitude, latMin],
-      [longitude, latMax],
+      [currentCellEastLongitude, latMin],
+      [currentCellEastLongitude, latMax],
     ]);
-    longitude += lonDiff;
+
+    currentCellLocationId = LocationId.adjacent(currentCellLocationId, "e");
+    currentCellBounds = LocationId.bounds(currentCellLocationId);
+    currentCellEastLongitude = currentCellBounds.ne.lon;
   }
 
   return lines;
