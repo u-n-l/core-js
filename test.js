@@ -368,7 +368,7 @@ describe("unl-core", function () {
         },
       },
       12
-    ).length.should.equal(1993);
+    ).length.should.equal(1481);
   });
 });
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
