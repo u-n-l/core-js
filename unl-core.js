@@ -354,32 +354,32 @@ LocationId.gridLines = function (bounds, precision) {
 
   let currentCellLocationId = swCellLocationId;
   let currentCellBounds = swCellBounds;
-  let currentCellLatDiff = latStart;
+  let currentCellNorthLatitude = latStart;
 
-  while (currentCellLatDiff <= latMax) {
+  while (currentCellNorthLatitude <= latMax) {
     lines.push([
-      [lonMin, currentCellLatDiff],
-      [lonMax, currentCellLatDiff],
+      [lonMin, currentCellNorthLatitude],
+      [lonMax, currentCellNorthLatitude],
     ]);
 
     currentCellLocationId = LocationId.adjacent(currentCellLocationId, "n");
     currentCellBounds = LocationId.bounds(currentCellLocationId);
-    currentCellLatDiff = currentCellBounds.ne.lat;
+    currentCellNorthLatitude = currentCellBounds.ne.lat;
   }
 
   currentCellLocationId = swCellLocationId;
   currentCellBounds = swCellBounds;
-  let currentCellLonDiff = lonStart;
+  let currentCellEastLongitude = lonStart;
 
-  while (currentCellLonDiff <= lonMax) {
+  while (currentCellEastLongitude <= lonMax) {
     lines.push([
-      [currentCellLonDiff, latMin],
-      [currentCellLonDiff, latMax],
+      [currentCellEastLongitude, latMin],
+      [currentCellEastLongitude, latMax],
     ]);
 
     currentCellLocationId = LocationId.adjacent(currentCellLocationId, "e");
     currentCellBounds = LocationId.bounds(currentCellLocationId);
-    currentCellLonDiff = currentCellBounds.ne.lon;
+    currentCellEastLongitude = currentCellBounds.ne.lon;
   }
 
   return lines;
