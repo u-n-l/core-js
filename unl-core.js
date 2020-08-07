@@ -10,8 +10,8 @@ var UnlCore = {};
 UnlCore.base32 = "0123456789bcdefghjkmnpqrstuvwxyz";
 
 /**
- * Encodes latitude/longitude to locationId, either to specified precision or to automatically
- * evaluated precision.
+ * Encodes latitude/longitude coordinates to locationId, either to specified precision or
+ * to default precision. Elevation information can be optionally specified in options parameter.
  *
  * @param   {number} lat - Latitude in degrees.
  * @param   {number} lon - Longitude in degrees.
@@ -132,7 +132,7 @@ UnlCore.decode = function (locationId) {
 };
 
 /**
- * Returns SW/NE latitude/longitude bounds of specified locationId.
+ * Returns SW/NE latitude/longitude bounds of specified locationId cell.
  *
  * @param   {string} locationId - Cell that bounds are required of.
  * @returns {{sw: {lat: number, lon: number}, ne: {lat: number, lon: number}}, elevation: number, elevationType: string}
@@ -324,7 +324,9 @@ UnlCore.appendElevation = function (
 };
 
 /**
- * Returns grid lines for specified SW/NE latitude/longitude bounds and precision.
+ * Returns the vertical and horizontal lines that can be used to draw a UNL grid in the specified
+ * SW/NE latitude/longitude bounds and precision. Each line is represented by an array of two
+ * coordinates in the format: [[startLon, startLat], [endLon, endLat]].
  *
  * @param   {sw: {lat: number, lon: number}, ne: {lat: number, lon: number}} bounds - The bound whithin to return the grid lines.
  * @param   {number} [precision] - Number of characters to consider for the locationId of a grid cell. Default value is 9.
