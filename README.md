@@ -316,7 +316,9 @@ Returns a string:
 "6gkzwgjz@5"
 ```
 
-Note to obtain neighbours as an array, you can use
+## Note
+
+To obtain neighbours as an array, you can use
 
     const neighboursObj = UnlCore.neighbours(locationId);
     const neighboursArr = Object.keys(neighboursObj).map(n => neighboursObj[n]);
