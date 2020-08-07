@@ -4,33 +4,33 @@
 "use strict";
 
 /**
- * LocationId: UNL’s geocoding system.
+ * UnlCore: UNL’s geocoding system.
  */
-var LocationId = {};
-LocationId.base32 = "0123456789bcdefghjkmnpqrstuvwxyz";
+var UnlCore = {};
+UnlCore.base32 = "0123456789bcdefghjkmnpqrstuvwxyz";
 
 /**
- * Encodes latitude/longitude to locationId, either to specified precision or to automatically
- * evaluated precision.
+ * Encodes latitude/longitude coordinates to locationId, either to specified precision or
+ * to default precision. Elevation information can be optionally specified in options parameter.
  *
  * @param   {number} lat - Latitude in degrees.
  * @param   {number} lon - Longitude in degrees.
- * @param   {number} [precision] - Number of characters in resulting locationId.
+ * @param   {number} [precision] - Number of characters in resulting locationId. Default value is 9.
  * @param   {object} [options] - Number of options. Including elevation
  * @returns {string} LocationId of supplied latitude/longitude.
  * @throws  Invalid coordinates.
  *
  * @example
- *     var locationId = LocationId.encode(52.205, 0.119, 7); // => 'u120fxw'
- *     var locationId = LocationId.encode(52.205, 0.119, 7, { elevation: 9, elevationType: 'floor'}); // => 'u120fxw@9'
+ *     var locationId = UnlCore.encode(52.205, 0.119, 7); // => 'u120fxw'
+ *     var locationId = UnlCore.encode(52.205, 0.119, 7, { elevation: 9, elevationType: 'floor'}); // => 'u120fxw@9'
  */
-LocationId.encode = function (lat, lon, precision, options) {
+UnlCore.encode = function (lat, lon, precision, options) {
   // infer precision?
   if (typeof precision == "undefined") {
     // refine locationId until it matches precision of supplied lat/lon
     for (var p = 1; p <= 9; p++) {
-      var hash = LocationId.encode(lat, lon, p);
-      var posn = LocationId.decode(hash);
+      var hash = UnlCore.encode(lat, lon, p);
+      var posn = UnlCore.decode(hash);
       if (posn.lat == lat && posn.lon == lon) return hash;
     }
     precision = 9; // set to maximum
@@ -79,7 +79,7 @@ LocationId.encode = function (lat, lon, precision, options) {
 
     if (++bit == 5) {
       // 5 bits gives us a character: append it and start over
-      locationId += LocationId.base32.charAt(idx);
+      locationId += UnlCore.base32.charAt(idx);
       bit = 0;
       idx = 0;
     }
@@ -88,7 +88,7 @@ LocationId.encode = function (lat, lon, precision, options) {
   var elevation = (options && options.elevation) || 0;
   var elevationType = (options && options.elevationType) || "floor";
 
-  return LocationId.appendElevation(locationId, elevation, elevationType);
+  return UnlCore.appendElevation(locationId, elevation, elevationType);
 };
 
 /**
@@ -100,13 +100,13 @@ LocationId.encode = function (lat, lon, precision, options) {
  * @throws  Invalid locationId.
  *
  * @example
- *     var latlon = LocationId.decode('u120fxw'); // => { lat: 52.205, lon: 0.1188, elevation:0, elevationType:floor, bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
- *     var latlon = LocationId.decode('u120fxw@3'); // => { lat: 52.205, lon: 0.1188, elevation:3, elevationType:floor,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
- *     var latlon = LocationId.decode('u120fxw#87'); // => { lat: 52.205, lon: 0.1188, elevation:87, elevationType:heightincm,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
+ *     var latlon = UnlCore.decode('u120fxw'); // => { lat: 52.205, lon: 0.1188, elevation:0, elevationType: floor, bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
+ *     var latlon = UnlCore.decode('u120fxw@3'); // => { lat: 52.205, lon: 0.1188, elevation:3, elevationType: floor,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
+ *     var latlon = UnlCore.decode('u120fxw#87'); // => { lat: 52.205, lon: 0.1188, elevation:87, elevationType: heightincm,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
  */
-LocationId.decode = function (locationId) {
-  var locationIdWithElevation = LocationId.excludeElevation(locationId);
-  var bounds = LocationId.bounds(locationIdWithElevation.locationId); // <-- the hard work
+UnlCore.decode = function (locationId) {
+  var locationIdWithElevation = UnlCore.excludeElevation(locationId);
+  var bounds = UnlCore.bounds(locationIdWithElevation.locationId); // <-- the hard work
   // now just determine the centre of the cell...
 
   var latMin = bounds.sw.lat,
@@ -132,14 +132,14 @@ LocationId.decode = function (locationId) {
 };
 
 /**
- * Returns SW/NE latitude/longitude bounds of specified locationId.
+ * Returns SW/NE latitude/longitude bounds of specified locationId cell.
  *
  * @param   {string} locationId - Cell that bounds are required of.
  * @returns {{sw: {lat: number, lon: number}, ne: {lat: number, lon: number}}, elevation: number, elevationType: string}
  * @throws  Invalid locationId.
  */
-LocationId.bounds = function (locationId) {
-  var locationIdWithElevation = LocationId.excludeElevation(locationId);
+UnlCore.bounds = function (locationId) {
+  var locationIdWithElevation = UnlCore.excludeElevation(locationId);
 
   var locationIdWithoutElevation = locationIdWithElevation.locationId;
 
@@ -151,7 +151,7 @@ LocationId.bounds = function (locationId) {
 
   for (var i = 0; i < locationIdWithoutElevation.length; i++) {
     var chr = locationIdWithoutElevation.charAt(i);
-    var idx = LocationId.base32.indexOf(chr);
+    var idx = UnlCore.base32.indexOf(chr);
     if (idx == -1) throw new Error("Invalid locationId");
 
     for (var n = 4; n >= 0; n--) {
@@ -195,13 +195,13 @@ LocationId.bounds = function (locationId) {
  * @returns {string} LocationId of adjacent cell.
  * @throws  Invalid locationId.
  */
-LocationId.adjacent = function (locationId, direction) {
+UnlCore.adjacent = function (locationId, direction) {
   // based on github.com/davetroy/geohash-js
 
-  var locationIdWithoutElevation = LocationId.excludeElevation(locationId)
+  var locationIdWithoutElevation = UnlCore.excludeElevation(locationId)
     .locationId;
-  var elevation = LocationId.excludeElevation(locationId).elevation;
-  var elevationType = LocationId.excludeElevation(locationId).elevationType;
+  var elevation = UnlCore.excludeElevation(locationId).elevation;
+  var elevationType = UnlCore.excludeElevation(locationId).elevationType;
 
   direction = direction.toLowerCase();
 
@@ -229,16 +229,15 @@ LocationId.adjacent = function (locationId, direction) {
 
   // check for edge-cases which don't share common prefix
   if (border[direction][type].indexOf(lastCh) != -1 && parent !== "") {
-    parent = LocationId.adjacent(parent, direction);
+    parent = UnlCore.adjacent(parent, direction);
   }
 
   // append letter for direction to parent
   var nextLocationId =
-    parent +
-    LocationId.base32.charAt(neighbour[direction][type].indexOf(lastCh));
+    parent + UnlCore.base32.charAt(neighbour[direction][type].indexOf(lastCh));
 
   if (elevation && elevationType)
-    return LocationId.appendElevation(nextLocationId, elevation, elevationType);
+    return UnlCore.appendElevation(nextLocationId, elevation, elevationType);
 
   return nextLocationId;
 };
@@ -250,16 +249,16 @@ LocationId.adjacent = function (locationId, direction) {
  * @returns {{n,ne,e,se,s,sw,w,nw: string}}
  * @throws  Invalid locationId.
  */
-LocationId.neighbours = function (locationId) {
+UnlCore.neighbours = function (locationId) {
   return {
-    n: LocationId.adjacent(locationId, "n"),
-    ne: LocationId.adjacent(LocationId.adjacent(locationId, "n"), "e"),
-    e: LocationId.adjacent(locationId, "e"),
-    se: LocationId.adjacent(LocationId.adjacent(locationId, "s"), "e"),
-    s: LocationId.adjacent(locationId, "s"),
-    sw: LocationId.adjacent(LocationId.adjacent(locationId, "s"), "w"),
-    w: LocationId.adjacent(locationId, "w"),
-    nw: LocationId.adjacent(LocationId.adjacent(locationId, "n"), "w"),
+    n: UnlCore.adjacent(locationId, "n"),
+    ne: UnlCore.adjacent(UnlCore.adjacent(locationId, "n"), "e"),
+    e: UnlCore.adjacent(locationId, "e"),
+    se: UnlCore.adjacent(UnlCore.adjacent(locationId, "s"), "e"),
+    s: UnlCore.adjacent(locationId, "s"),
+    sw: UnlCore.adjacent(UnlCore.adjacent(locationId, "s"), "w"),
+    w: UnlCore.adjacent(locationId, "w"),
+    nw: UnlCore.adjacent(UnlCore.adjacent(locationId, "n"), "w"),
   };
 };
 
@@ -271,7 +270,7 @@ LocationId.neighbours = function (locationId) {
  * @returns {locationId: string, elevation: Number, elevationType: string }
  * @throws  Invalid locationId.
  */
-LocationId.excludeElevation = function (locationIdWithElevation) {
+UnlCore.excludeElevation = function (locationIdWithElevation) {
   if (locationIdWithElevation.length < 0) throw new Error("Invalid locationId");
   if (
     locationIdWithElevation.includes("#") &&
@@ -311,7 +310,7 @@ LocationId.excludeElevation = function (locationIdWithElevation) {
  * @returns {string}
  * @throws  Invalid locationId.
  */
-LocationId.appendElevation = function (
+UnlCore.appendElevation = function (
   locationIdWithoutElevation,
   elevation,
   elevationType
@@ -325,13 +324,15 @@ LocationId.appendElevation = function (
 };
 
 /**
- * Returns grid lines for specified SW/NE latitude/longitude bounds and precision.
+ * Returns the vertical and horizontal lines that can be used to draw a UNL grid in the specified
+ * SW/NE latitude/longitude bounds and precision. Each line is represented by an array of two
+ * coordinates in the format: [[startLon, startLat], [endLon, endLat]].
  *
  * @param   {sw: {lat: number, lon: number}, ne: {lat: number, lon: number}} bounds - The bound whithin to return the grid lines.
- * @param   {number} [precision] - Number of characters to consider for the locationId of a grid cell.
+ * @param   {number} [precision] - Number of characters to consider for the locationId of a grid cell. Default value is 9.
  * @returns {[[number, number],[number, number]][]}
  */
-LocationId.gridLines = function (bounds, precision) {
+UnlCore.gridLines = function (bounds, precision) {
   const lines = [];
 
   const lonMin = bounds.sw.lon;
@@ -342,12 +343,12 @@ LocationId.gridLines = function (bounds, precision) {
 
   const encodePrecision = typeof precision == "undefined" ? 9 : precision;
 
-  const swCellLocationId = LocationId.encode(
+  const swCellLocationId = UnlCore.encode(
     bounds.sw.lat,
     bounds.sw.lon,
     encodePrecision
   );
-  const swCellBounds = LocationId.bounds(swCellLocationId);
+  const swCellBounds = UnlCore.bounds(swCellLocationId);
 
   const latStart = swCellBounds.ne.lat;
   const lonStart = swCellBounds.ne.lon;
@@ -362,8 +363,8 @@ LocationId.gridLines = function (bounds, precision) {
       [lonMax, currentCellNorthLatitude],
     ]);
 
-    currentCellLocationId = LocationId.adjacent(currentCellLocationId, "n");
-    currentCellBounds = LocationId.bounds(currentCellLocationId);
+    currentCellLocationId = UnlCore.adjacent(currentCellLocationId, "n");
+    currentCellBounds = UnlCore.bounds(currentCellLocationId);
     currentCellNorthLatitude = currentCellBounds.ne.lat;
   }
 
@@ -377,8 +378,8 @@ LocationId.gridLines = function (bounds, precision) {
       [currentCellEastLongitude, latMax],
     ]);
 
-    currentCellLocationId = LocationId.adjacent(currentCellLocationId, "e");
-    currentCellBounds = LocationId.bounds(currentCellLocationId);
+    currentCellLocationId = UnlCore.adjacent(currentCellLocationId, "e");
+    currentCellBounds = UnlCore.bounds(currentCellLocationId);
     currentCellEastLongitude = currentCellBounds.ne.lon;
   }
 
@@ -387,4 +388,4 @@ LocationId.gridLines = function (bounds, precision) {
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-if (typeof module != "undefined" && module.exports) module.exports = LocationId; // CommonJS, node.js
+if (typeof module != "undefined" && module.exports) module.exports = UnlCore; // CommonJS, node.js

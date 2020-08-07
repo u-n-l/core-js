@@ -1,8 +1,8 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-/*  LocationId Test Harness                                (c) Emre Turan 2019 / MIT Licence  */
+/*  UnlCore Test Harness                                (c) Emre Turan 2019 / MIT Licence  */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-import LocationId from "./unl-core.js";
+import UnlCore from "./unl-core.js";
 
 if (typeof window == "undefined") {
   // node
@@ -16,29 +16,27 @@ if (typeof window == "undefined") {
 
 describe("unl-core", function () {
   it("encodes Jutland", function () {
-    LocationId.encode(57.648, 10.41, 6).should.equal("u4pruy");
+    UnlCore.encode(57.648, 10.41, 6).should.equal("u4pruy");
   });
   it("encodes Jutland floor 5", function () {
-    LocationId.encode(57.648, 10.41, 6, { elevation: 5 }).should.equal(
-      "u4pruy@5"
-    );
+    UnlCore.encode(57.648, 10.41, 6, { elevation: 5 }).should.equal("u4pruy@5");
   });
   it("encodes Jutland floor -2", function () {
-    LocationId.encode(57.648, 10.41, 6, { elevation: -2 }).should.equal(
+    UnlCore.encode(57.648, 10.41, 6, { elevation: -2 }).should.equal(
       "u4pruy@-2"
     );
   });
   it("encodes Jutland heightincm 87", function () {
-    LocationId.encode(57.648, 10.41, 6, {
+    UnlCore.encode(57.648, 10.41, 6, {
       elevation: 87,
       elevationType: "heightincm",
     }).should.equal("u4pruy#87");
   });
   it("encodes Jutland with default precision 9", function () {
-    LocationId.encode(57.64, 10.41).should.equal("u4pruvh36");
+    UnlCore.encode(57.64, 10.41).should.equal("u4pruvh36");
   });
   it("decodes Jutland", function () {
-    LocationId.decode("u4pruy").should.deep.equal({
+    UnlCore.decode("u4pruy").should.deep.equal({
       lat: 57.648,
       lon: 10.41,
       elevation: 0,
@@ -58,7 +56,7 @@ describe("unl-core", function () {
     });
   });
   it("decodes Jutland floor 3", function () {
-    LocationId.decode("u4pruy@3").should.deep.equal({
+    UnlCore.decode("u4pruy@3").should.deep.equal({
       lat: 57.648,
       lon: 10.41,
       elevation: 3,
@@ -78,7 +76,7 @@ describe("unl-core", function () {
     });
   });
   it("decodes Jutland floor 0", function () {
-    LocationId.decode("u4pruy@0").should.deep.equal({
+    UnlCore.decode("u4pruy@0").should.deep.equal({
       lat: 57.648,
       lon: 10.41,
       elevation: 0,
@@ -98,7 +96,7 @@ describe("unl-core", function () {
     });
   });
   it("decodes Jutland floor -2", function () {
-    LocationId.decode("u4pruy@-2").should.deep.equal({
+    UnlCore.decode("u4pruy@-2").should.deep.equal({
       lat: 57.648,
       lon: 10.41,
       elevation: -2,
@@ -118,7 +116,7 @@ describe("unl-core", function () {
     });
   });
   it("decodes Jutland heightincm 87", function () {
-    LocationId.decode("u4pruy#87").should.deep.equal({
+    UnlCore.decode("u4pruy#87").should.deep.equal({
       lat: 57.648,
       lon: 10.41,
       elevation: 87,
@@ -138,7 +136,7 @@ describe("unl-core", function () {
     });
   });
   it("decodes Jutland heightincm 0", function () {
-    LocationId.decode("u4pruy#0").should.deep.equal({
+    UnlCore.decode("u4pruy#0").should.deep.equal({
       lat: 57.648,
       lon: 10.41,
       elevation: 0,
@@ -158,10 +156,10 @@ describe("unl-core", function () {
     });
   });
   it("encodes Curitiba", function () {
-    LocationId.encode(-25.38262, -49.26561, 8).should.equal("6gkzwgjz");
+    UnlCore.encode(-25.38262, -49.26561, 8).should.equal("6gkzwgjz");
   });
   it("decodes Curitiba", function () {
-    LocationId.decode("6gkzwgjz").should.deep.equal({
+    UnlCore.decode("6gkzwgjz").should.deep.equal({
       lat: -25.38262,
       lon: -49.26561,
       elevation: 0,
@@ -181,7 +179,7 @@ describe("unl-core", function () {
     });
   });
   it("decodes Curitiba", function () {
-    LocationId.decode("6gkzwgjz").should.deep.equal({
+    UnlCore.decode("6gkzwgjz").should.deep.equal({
       lat: -25.38262,
       lon: -49.26561,
       elevation: 0,
@@ -201,7 +199,7 @@ describe("unl-core", function () {
     });
   });
   it("decodes Curitiba floor 5", function () {
-    LocationId.decode("6gkzwgjz@5").should.deep.equal({
+    UnlCore.decode("6gkzwgjz@5").should.deep.equal({
       lat: -25.38262,
       lon: -49.26561,
       elevation: 5,
@@ -221,7 +219,7 @@ describe("unl-core", function () {
     });
   });
   it("decodes Curitiba heightincm 90", function () {
-    LocationId.decode("6gkzwgjz#90").should.deep.equal({
+    UnlCore.decode("6gkzwgjz#90").should.deep.equal({
       lat: -25.38262,
       lon: -49.26561,
       elevation: 90,
@@ -241,10 +239,10 @@ describe("unl-core", function () {
     });
   });
   it("adjacent north", function () {
-    LocationId.adjacent("ezzz@5", "n").should.equal("gbpb@5");
+    UnlCore.adjacent("ezzz@5", "n").should.equal("gbpb@5");
   });
   it("fetches neighbours", function () {
-    LocationId.neighbours("ezzz").should.deep.equal({
+    UnlCore.neighbours("ezzz").should.deep.equal({
       n: "gbpb",
       ne: "u000",
       e: "spbp",
@@ -256,7 +254,7 @@ describe("unl-core", function () {
     });
   });
   it("fetches neighbours 5th floor", function () {
-    LocationId.neighbours("ezzz@5").should.deep.equal({
+    UnlCore.neighbours("ezzz@5").should.deep.equal({
       n: "gbpb@5",
       ne: "u000@5",
       e: "spbp@5",
@@ -268,7 +266,7 @@ describe("unl-core", function () {
     });
   });
   it("fetches neighbours -2 floor", function () {
-    LocationId.neighbours("ezzz@-2").should.deep.equal({
+    UnlCore.neighbours("ezzz@-2").should.deep.equal({
       n: "gbpb@-2",
       ne: "u000@-2",
       e: "spbp@-2",
@@ -280,7 +278,7 @@ describe("unl-core", function () {
     });
   });
   it("fetches neighbours above 87cm", function () {
-    LocationId.neighbours("ezzz#87").should.deep.equal({
+    UnlCore.neighbours("ezzz#87").should.deep.equal({
       n: "gbpb#87",
       ne: "u000#87",
       e: "spbp#87",
@@ -292,7 +290,7 @@ describe("unl-core", function () {
     });
   });
   it("fetches neighbours below 5cm", function () {
-    LocationId.neighbours("ezzz#-5").should.deep.equal({
+    UnlCore.neighbours("ezzz#-5").should.deep.equal({
       n: "gbpb#-5",
       ne: "u000#-5",
       e: "spbp#-5",
@@ -304,32 +302,32 @@ describe("unl-core", function () {
     });
   });
   it("matches locationId", function () {
-    LocationId.encode(37.25, 123.75, 12).should.equal("wy85bj0hbp21");
+    UnlCore.encode(37.25, 123.75, 12).should.equal("wy85bj0hbp21");
   });
   it("excludes elevation Curitiba 5th floor", function () {
-    LocationId.excludeElevation("6gkzwgjz@5").should.deep.equal({
+    UnlCore.excludeElevation("6gkzwgjz@5").should.deep.equal({
       locationId: "6gkzwgjz",
       elevation: 5,
       elevationType: "floor",
     });
   });
   it("excludes elevation Curitiba above 87cm", function () {
-    LocationId.excludeElevation("6gkzwgjz#87").should.deep.equal({
+    UnlCore.excludeElevation("6gkzwgjz#87").should.deep.equal({
       locationId: "6gkzwgjz",
       elevation: 87,
       elevationType: "heightincm",
     });
   });
   it("appends elevation Curitiba 5th floor", function () {
-    LocationId.appendElevation("6gkzwgjz", 5).should.equal("6gkzwgjz@5");
+    UnlCore.appendElevation("6gkzwgjz", 5).should.equal("6gkzwgjz@5");
   });
   it("appends elevation Curitiba above 87cm", function () {
-    LocationId.appendElevation("6gkzwgjz", 87, "heightincm").should.equal(
+    UnlCore.appendElevation("6gkzwgjz", 87, "heightincm").should.equal(
       "6gkzwgjz#87"
     );
   });
   it("retrieves grid lines with precision 9", function () {
-    LocationId.gridLines(
+    UnlCore.gridLines(
       {
         sw: {
           lat: 46.77210936378606,
@@ -344,7 +342,7 @@ describe("unl-core", function () {
     ).length.should.equal(7);
   });
   it("retrieves grid lines with no precision specified (default 9)", function () {
-    LocationId.gridLines({
+    UnlCore.gridLines({
       sw: {
         lat: 46.77210936378606,
         lon: 23.595436614661565,
@@ -356,7 +354,7 @@ describe("unl-core", function () {
     }).length.should.equal(7);
   });
   it("retrieves grid lines with precision 12", function () {
-    LocationId.gridLines(
+    UnlCore.gridLines(
       {
         sw: {
           lat: 46.77210936378606,
