@@ -15,7 +15,7 @@ LocationId.base32 = "0123456789bcdefghjkmnpqrstuvwxyz";
  *
  * @param   {number} lat - Latitude in degrees.
  * @param   {number} lon - Longitude in degrees.
- * @param   {number} [precision] - Number of characters in resulting locationId.
+ * @param   {number} [precision] - Number of characters in resulting locationId. Default value is 9.
  * @param   {object} [options] - Number of options. Including elevation
  * @returns {string} LocationId of supplied latitude/longitude.
  * @throws  Invalid coordinates.
@@ -100,9 +100,9 @@ LocationId.encode = function (lat, lon, precision, options) {
  * @throws  Invalid locationId.
  *
  * @example
- *     var latlon = LocationId.decode('u120fxw'); // => { lat: 52.205, lon: 0.1188, elevation:0, elevationType:floor, bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
- *     var latlon = LocationId.decode('u120fxw@3'); // => { lat: 52.205, lon: 0.1188, elevation:3, elevationType:floor,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
- *     var latlon = LocationId.decode('u120fxw#87'); // => { lat: 52.205, lon: 0.1188, elevation:87, elevationType:heightincm,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
+ *     var latlon = LocationId.decode('u120fxw'); // => { lat: 52.205, lon: 0.1188, elevation:0, elevationType: floor, bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
+ *     var latlon = LocationId.decode('u120fxw@3'); // => { lat: 52.205, lon: 0.1188, elevation:3, elevationType: floor,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
+ *     var latlon = LocationId.decode('u120fxw#87'); // => { lat: 52.205, lon: 0.1188, elevation:87, elevationType: heightincm,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
  */
 LocationId.decode = function (locationId) {
   var locationIdWithElevation = LocationId.excludeElevation(locationId);
@@ -328,7 +328,7 @@ LocationId.appendElevation = function (
  * Returns grid lines for specified SW/NE latitude/longitude bounds and precision.
  *
  * @param   {sw: {lat: number, lon: number}, ne: {lat: number, lon: number}} bounds - The bound whithin to return the grid lines.
- * @param   {number} [precision] - Number of characters to consider for the locationId of a grid cell.
+ * @param   {number} [precision] - Number of characters to consider for the locationId of a grid cell. Default value is 9.
  * @returns {[[number, number],[number, number]][]}
  */
 LocationId.gridLines = function (bounds, precision) {
