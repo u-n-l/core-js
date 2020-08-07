@@ -30,6 +30,40 @@ If you want the locationId converted from Base32 to Base4, you can e.g.:
 
     parseInt(UnlCore.encode(52.20, 0.12, 6), 32).toString(4);
 
+## Install
+
+```sh
+npm install unl-core
+```
+
+```sh
+yarn add unl-core
+```
+
+## TypeScript
+
+```sh
+npm install @types/unl-core --save-dev
+```
+
+```sh
+yarn add @types/unl-core --dev
+```
+
+## Usage
+
+You can either import certain functions from the package directly:
+
+```js
+import { encode } from "unl-core";
+```
+
+or load the whole library:
+
+```js
+import UnlCore from "unl-core";
+```
+
 ## Usage in browser
 
 UnlCore can be used in the browser by taking a local copy, or loading it from
@@ -62,13 +96,6 @@ $ node -r esm
 > const latlon = UnlCore.decode('u120fw');
 > console.assert(JSON.stringify(latlon) == '{"lat":52.1988,"lon":0.115}');
 ```
-
-## Further details about locationId in general
-
-More information (with interactive conversion) at
-[www.movable-type.co.uk/scripts/UnlCore.html](http://www.movable-type.co.uk/scripts/UnlCore.html).
-
-Full JsDoc at [www.movable-type.co.uk/scripts/js/unl-core/docs/UnlCore.html](http://www.movable-type.co.uk/scripts/js/unl-core/docs/UnlCore.html).
 
 ## Upgrade to version 2.0 from version 1.0
 
