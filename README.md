@@ -72,21 +72,13 @@ $ node -r esm
 ### `Direction`
 
 ```js
-enum Direction {
-    NORTH = 'N',
-    SOUTH = 'S',
-    EAST = 'E',
-    WEST = 'W',
-}
+type Direction = "N" | "S" | "E" | "W";
 ```
 
 ### `ElevationType`
 
 ```js
-enum ElevationType {
-    FLOOR = 'floor',
-    HEIGHT_IN_CM = 'heightincm',
-}
+type ElevationType = "floor" | "heightincm";
 ```
 
 ### `Neighbours`
@@ -119,6 +111,13 @@ interface Point {
 interface Bounds {
   sw: Point;
   ne: Point;
+}
+```
+
+### `BoundsWithElevation`
+
+```js
+interface BoundsWithElevation extends Bounds {
   elevation: number;
   elevationType: ElevationType;
 }
@@ -128,11 +127,9 @@ interface Bounds {
 
 ```js
 interface PointWithElevation extends Point {
-  lat: number;
-  lon: number;
   elevation: number;
   elevationType: ElevationType;
-  bounds: Bounds;
+  bounds: BoundsWithElevation;
 }
 ```
 
@@ -159,7 +156,7 @@ interface LocationIdWithElevation {
 
 ### `encode(lat: number, lon: number, precision?: number, options?: EncodeOptions): string`
 
-Encodes lat/lon coordinates to locationId, either to specified precision or to default precision. Elevation information can be optionally specified in options parameter.
+Encodes latitude/longitude coordinates to locationId, either to specified precision or to default precision. Elevation information can be optionally specified in options parameter.
 
 ```js
 UnlCore.encode(52.37686, 4.90065);
@@ -173,7 +170,7 @@ Returns a string:
 
 ### `decode(locationId: string): PointWithElevation`
 
-Decodes a locationId to lat/lon (location is approximate centre of locationId cell, to reasonable precision).
+Decodes a locationId to latitude/longitude (location is approximate centre of locationId cell, to reasonable precision).
 
 ```js
 UnlCore.decode("u173zwbt3");
@@ -198,9 +195,9 @@ Returns a Point object:
 }
 ```
 
-### `bounds(locationId: string): Bounds`
+### `bounds(locationId: string): BoundsWithElevation`
 
-Returns SW/NE lat/lon bounds of specified locationId cell.
+Returns SW/NE latitude/longitude bounds of specified locationId cell.
 
 ```js
 UnlCore.bounds("u173zwbt3");
@@ -217,13 +214,15 @@ Returns a Bounds object:
     ne: {
         lat: maxLat,
         lon: maxLon
-    }
+    },
+    elevation: 0,
+    elevationType: "floor"
 }
 ```
 
 ### `function gridLines(bounds: Bounds, precision?: number): Array<[[number, number], [number, number]]>`
 
-Returns the vertical and horizontal lines that can be used to draw a UNL grid in the given bounds. Each line is represented by an array of two coordinates in the format: [[startLon, startLat], [endLon, endLat]].
+Returns the vertical and horizontal lines that can be used to draw a UNL grid in the specified SW/NE latitude/longitude bounds and precision. Each line is represented by an array of two coordinates in the format: [[startLon, startLat], [endLon, endLat]].
 
 ```js
 UnlCore.gridLines({
@@ -252,7 +251,7 @@ Returns an array of lines:
 Determines adjacent cell in given direction.
 
 ```js
-UnlCore.adjacent("ezzz@5", Direction.North);
+UnlCore.adjacent("ezzz@5", "N");
 ```
 
 Returns a string:
