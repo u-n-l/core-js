@@ -123,7 +123,7 @@ interface BoundsWithElevation extends Bounds {
 }
 ```
 
-### `Point`
+### `PointWithElevation`
 
 ```js
 interface PointWithElevation extends Point {
