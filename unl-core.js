@@ -3,11 +3,18 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 "use strict";
 
+const Clustering = require("./polyhash");
+
 /**
  * UnlCore: UNL’s geocoding system.
  */
 var UnlCore = {};
 UnlCore.base32 = "0123456789bcdefghjkmnpqrstuvwxyz";
+
+/**
+ * Expose submodule for Polyhash algorithm 
+ */
+UnlCore.Polyhash = Clustering
 
 /**
  * Encodes latitude/longitude coordinates to locationId, either to specified precision or
@@ -328,7 +335,7 @@ UnlCore.appendElevation = function (
  * SW/NE latitude/longitude bounds and precision. Each line is represented by an array of two
  * coordinates in the format: [[startLon, startLat], [endLon, endLat]].
  *
- * @param   {sw: {lat: number, lon: number}, ne: {lat: number, lon: number}} bounds - The bound whithin to return the grid lines.
+ * @param   {sw: {lat: number, lon: number}, ne: {lat: number, lon: number}} bounds - The bound within to return the grid lines.
  * @param   {number} [precision] - Number of characters to consider for the locationId of a grid cell. Default value is 9.
  * @returns {[[number, number],[number, number]][]}
  */
