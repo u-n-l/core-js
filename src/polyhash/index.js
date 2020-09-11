@@ -1,13 +1,10 @@
-const unl = require('../unl-core');
+const unl = require('../core');
+const util = require('./util')
 const turfBooleanContains = require('@turf/boolean-contains').default;
-const turfBooleanDisjoint = require('@turf/boolean-disjoint').default;
 const turfIntersect = require('@turf/intersect').default;
-const turfHelpers = require('@turf/helpers')
-const turfMeta = require('@turf/meta')
 
-const maxPrecision = 16;
+const maxLocationIdPrecision = 16;
 
-var Clustering = {};
 const encode = {
   '0': 0,  // 00000
   '1': 1,  // 00001
@@ -78,29 +75,43 @@ const decode = [
 ];
 
 /**
- * Returns a Polyhash for a given array of points. This is a compressed representation of an ordered list of (lat,lon) points
+ * Converts an array of points into a polyhash, locationId-polygon
  * 
  * @param {*} points 
- * @param {*} precision 
+ * @param {*} locationIdPrecision 
+ * @param {boolean} shouldDeflate - if false, returned polyhash will have full-length, inflated locationIds (default: false)
  */
-Clustering.toPolyhash = function (points, precision) {
-  if (precision > maxPrecision) {
-    console.error(`Invalid precision ${precision}. Maximum supported is ${maxPrecision}`)
+function toPolyhash(points, locationIdPrecision = 9, shouldDeflate = true) {
+  if (locationIdPrecision > maxLocationIdPrecision) {
+    console.error(`Invalid locationId precision ${locationIdPrecision}. Maximum supported is ${maxLocationIdPrecision}`)
     return null
   }
 
-  return deflate(points
-    .map(point => unl.encode(point[0], point[1], precision)))
+  let polyhash = points.map(point => unl.encode(point[0], point[1], locationIdPrecision))
+  if (shouldDeflate)
+    return deflate(polyhash)
+  
+  return polyhash
 }
 
-Clustering.toCoordinates = function (polyhash) {
+/**
+ * Returns an array of coordinates, the polygon represented by the given polyhash
+ * 
+ * @param {*} polyhash 
+ */
+function toCoordinates(polyhash) {
   return inflate(polyhash).map(locationId => {
     const point = unl.decode(locationId);
     return [parseFloat(point.lon.toFixed(6)), parseFloat(point.lat.toFixed(6))]
   });
 }
 
-Clustering.compressPolyhash = function (polyhash) {
+/**
+ * Compress the given polyhash object
+ * 
+ * @param {*} polyhash 
+ */
+function compressPolyhash(polyhash) {
   const blockHeaderBitSize = 1;
   const blockPrecisionHeaderBitSize = 4;
   const charBitSize = 6;
@@ -137,7 +148,7 @@ Clustering.compressPolyhash = function (polyhash) {
     let blockHeader = 1;
 
     // for each locationId
-    for (let locationIdx = 0; locationIdx < polyHashBlock.data.length; locationIdx++) {
+    for (let locationIdIndex = 0; locationIdIndex < polyHashBlock.data.length; locationIdIndex++) {
 
       // Block header
       setNextBit(blockHeader)
@@ -148,12 +159,12 @@ Clustering.compressPolyhash = function (polyhash) {
           const result = polyHashBlockPrecision >> j;
           setNextBit(result & 1);
         }
-        // Block header is 0 for the rest of the locations
+        // Block header is 0 for the rest of the locationIds
         blockHeader = 0;
       }
 
       // Encode the locationId
-      const locationId = polyHashBlock.data[locationIdx];
+      const locationId = polyHashBlock.data[locationIdIndex];
 
       //for each character in the locationId
       for (let charIndex = 0; charIndex < locationId.length; charIndex++) {
@@ -182,7 +193,12 @@ Clustering.compressPolyhash = function (polyhash) {
   return base64;
 }
 
-Clustering.decompressPolyhash = function (compressedPolyhash) {
+/**
+ * Return the polyhash object represented by the compressed signature
+ * 
+ * @param {*} compressedPolyhash 
+ */
+function decompressPolyhash(compressedPolyhash) {
   const buffer = Buffer.from(compressedPolyhash, 'base64');
 
   const result = [];
@@ -242,17 +258,23 @@ Clustering.decompressPolyhash = function (compressedPolyhash) {
   return inflate(result);
 }
 
-Clustering.toCluster = function (points, precision) {
-  if (precision > maxPrecision) {
-    console.error(`Invalid precision ${precision}. Maximum supported is ${maxPrecision}`)
+/**
+ * Convert the given polygon into a cluster of locationIds
+ * 
+ * @param {*} points 
+ * @param {*} locationIdPrecision 
+ */
+function toCluster(points, locationIdPrecision) {
+  if (locationIdPrecision > maxLocationIdPrecision) {
+    console.error(`Invalid locationId precision ${locationIdPrecision}. Maximum supported is ${maxLocationIdPrecision}`)
     return null
   }
 
-  const polygon = turfHelpers.polygon([points]);
-  const cells = 'bcdefghjkmnpqrstuvwxyz0123456789';
+  const polygon = util.polygon([points]);
+  const cellAlphabet = '0123456789bcdefghjkmnpqrstuvwxyz';
   const clusterCells = []
 
-  const queue = [[cells.split(''), polygon]];
+  const queue = [[cellAlphabet.split(''), polygon]];
 
   // Breadth First Search
   while (queue.length) {
@@ -266,23 +288,23 @@ Clustering.toCluster = function (points, precision) {
     const _cell = queue[0][0].shift()
     const _testPolygon = queue[0][1]
     // Convert to bounding box polygon
-    const box = unl.bounds(_cell);
+    const box = unl.bounds(_cell)
     const bounds = [
-      [box.ne.lon, box.ne.lat],
-      [box.sw.lon, box.ne.lat],
-      [box.sw.lon, box.sw.lat],
-      [box.ne.lon, box.sw.lat],
-      [box.ne.lon, box.ne.lat]
+      [box.ne.lat, box.ne.lon],
+      [box.sw.lat, box.ne.lon],
+      [box.sw.lat, box.sw.lon],
+      [box.ne.lat, box.sw.lon],
+      [box.ne.lat, box.ne.lon]
     ];
-    const cellPolygon = turfHelpers.polygon([bounds]);
-
+    //TODO: replace this
+    const cellPolygon = util.polygon([bounds]);
     // Check if Cell and polygon are intersecting
     const intersection = _isIntersecting(_testPolygon, cellPolygon);
 
     if (intersection) {
       // If the cell is inside the polygon, there is no need to search subcells
       // or max precsion is reached
-      if ((_cell.length === precision || _cell.length <= precision && _isInside(polygon, cellPolygon))) {
+      if ((_cell.length === locationIdPrecision || _cell.length <= locationIdPrecision && _isInside(polygon, cellPolygon))) {
         clusterCells.push(_cell)
       }
       else {
@@ -293,15 +315,16 @@ Clustering.toCluster = function (points, precision) {
         }
 
         // Then convert intersection polygon points into locationIds
-        let intersectionCells = []
-        turfMeta.coordEach(_newTestPolygon, function (currentCoord) {
-          const locationId = unl.encode(currentCoord[1], currentCoord[0], precision)
-          intersectionCells.push(locationId)
-        });
+        intersectionlocationIdsCells = []
+        
+        for (let coord of _newTestPolygon.geometry.coordinates[0]) {
+          const locationId = unl.encode(coord[0], coord[1], locationIdPrecision)
+          intersectionlocationIdsCells.push(locationId)
+        }
 
         // Then get the locationId that bounds the intersection polygon
         // Done by getting the longest common prefix in all the locationIds
-        const uniq = [...new Set(intersectionCells)].sort()
+        const uniq = [...new Set(intersectionlocationIdsCells)].sort()
         const first = uniq[0];
         const last = uniq.pop();
         const length = first.length;
@@ -309,21 +332,21 @@ Clustering.toCluster = function (points, precision) {
         while (index < length && first[index] === last[index]) {
           index++;
         }
-        const boundingCell = first.substring(0, index);
+        const boundingLocationIdCell = first.substring(0, index);
 
         // If the bounding cell size is larger (precision is lower) than the original cell
         // then ignore it and expand the current cell.
-        const tergetCell = boundingCell.length < _cell.length ? _cell : boundingCell
+        const targetCell = boundingLocationIdCell.length < _cell.length ? _cell : boundingLocationIdCell
 
         // If the bounding cell reach the target precision, don't search subcells
-        if (tergetCell.length === precision) {
+        if (targetCell.length === locationIdPrecision) {
           continue
         }
 
-        // Increment the search precision, by pushing all the possible subcells and the intersection polygon
+        // Increment the search precision, by pushing all the possible locationId subcells and the intersection polygon
         const subcells = []
-        for (const subcell of cells) {
-          subcells.push(`${tergetCell}${subcell}`)
+        for (const subcell of cellAlphabet) {
+          subcells.push(`${targetCell}${subcell}`)
         }
         queue.push([subcells, _newTestPolygon])
       }
@@ -332,20 +355,19 @@ Clustering.toCluster = function (points, precision) {
   const sortedClusterCells = clusterCells.sort(function (a, b) {
     // Sort string by length then alphabetically
     return a.length - b.length || a.localeCompare(b)
-
   })
   return deflate(sortedClusterCells);
 }
 
 /**
- * Convert polyhash into full locationIds
- * @param {*} polyhash
+ * Convert a list of deflated locationIds into its full-length equivalent
+ * @param {*} deflatedList
  */
-Clustering.inflate = function (polyhashList) {
+function inflate(deflatedList) {
   const res = []
   let last = null
 
-  for (const polyhash of polyhashList) {
+  for (const polyhash of deflatedList) {
     const precision = polyhash.precision
     const result = []
 
@@ -363,10 +385,11 @@ Clustering.inflate = function (polyhashList) {
 }
 
 /**
- * Convert locationId array into polyhash
+ * Return a deflated list of locationIds 
+ * 
  * @param {*} locationIds
  */
-Clustering.deflate = function (locationIds) {
+function deflate(locationIds) {
   return locationIds.reduce((result, current, currentIndex, values) => {
     const head = values[currentIndex - 1];
 
@@ -401,7 +424,7 @@ Clustering.deflate = function (locationIds) {
  * Convert locationId array into polyhash, removes the common prefix and group them by precision
  * @param {*} locationIds
  */
-Clustering.groupByPrefix = function (locationIds) {
+function groupByPrefix(locationIds) {
   return locationIds.reduce((result, current, currentIndex, values) => {
     const head = values[currentIndex - 1];
     const new_block = (!head || current.length != head.length)
@@ -429,31 +452,35 @@ Clustering.groupByPrefix = function (locationIds) {
 
 // Return true if polygon1 intersects polygon2
 function _isIntersecting(polygon1, polygon2) {
-  return !turfBooleanDisjoint(polygon1, polygon2)
+  let poly1 = polygon1.geometry.coordinates[0]
+  let poly2 = polygon2.geometry.coordinates[0]
+
+  return util.isPolyInPoly(poly1, poly2)
 }
 
 // Return true of polygon2 is inside polygon1
 function _isInside(polygon1, polygon2) {
+  // let poly1 = polygon1.geometry.coordinates[0]
+  // let poly2 = polygon2.geometry.coordinates[0]
+
+  // this is inefficient for large areas
+  // return util.polyContainsPoly(poly1, poly2)
   return turfBooleanContains(polygon1, polygon2);
 }
-
 
 // Return intersection area of two polygons
 function _getIntesection(polygon1, polygon2) {
   return turfIntersect(polygon1, polygon2);
 }
 
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
-if (typeof module != "undefined" && module.exports) module.exports = Clustering; // CommonJS, node.js
-
-// module.exports = {
-//   toPolyhash,
-//   toCoordinates,
-//   compressPolyhash,
-//   decompressPolyhash,
-//   toCluster,
-//   inflate,
-//   deflate,
-//   groupByPrefix
-// }
+// Exports
+module.exports = {
+  toPolyhash,
+  toCoordinates,
+  compressPolyhash,
+  decompressPolyhash,
+  toCluster,
+  inflate,
+  deflate,
+  groupByPrefix
+}
