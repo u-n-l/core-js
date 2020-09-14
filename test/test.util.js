@@ -1,4 +1,4 @@
-const { isPolyInPoly, vectorIntersect } = require("../../src/util")
+const { isPolyInPoly, vectorIntersect } = require("../src/polyhash/util")
 const chai = require('chai');
 const expect = chai.expect; // we are using the "expect" style of Chai
 

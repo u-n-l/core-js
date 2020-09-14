@@ -3,7 +3,7 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 "use strict";
 const https = require('https');
-const baseUrl = "api.unl.global"
+const baseUrl = "map.unl.global"
 global.API_KEY = ""; // set this with UnlCore.authenticate(key)
 const LOCATION_ID_REGEX = /^[0123456789bcdefghjkmnpqrstuvwxyz]{3,16}[@#]?[0-9]{0,3}$/
 const COORDINATES_REGEX = /^-?[0-9]{0,2}\.?[0-9]{0,16},\s?-?[0-9]{0,3}\.?[0-9]{0,16}$/
@@ -418,7 +418,7 @@ Core.toWords = async (location, apiKey, langCode = "en", count = 3) => {
   let addition = ""
   if (location.match(LOCATION_ID_REGEX)) type = "geohash"
   else if (location.match(COORDINATES_REGEX)) {
-    addition = `?count=${count}`
+    // addition = `?count=${count}`
     type = "coordinates"
   }
   else {
@@ -428,10 +428,10 @@ Core.toWords = async (location, apiKey, langCode = "en", count = 3) => {
 
   let options = {
     host: baseUrl,
-    path: `/v1/location/${type}/${location}?language=${langCode}${addition}`,
+    path: `/api/v1/${type}/${location}`,
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${apiKey}`
+      Authorization: ` Bearer ${apiKey}`
     }
   }
 
@@ -452,7 +452,7 @@ Core.fromWords = async (words, apiKey, langCode = "en") => {
 
   let options = {
     host: baseUrl,
-    path: `/v1/location/words/${words}?language=${langCode}`,
+    path: `/api/v1/location/words/${words}?language=${langCode}`,
     method: 'GET',
     headers: {
       Authorization: `Bearer ${apiKey}`
