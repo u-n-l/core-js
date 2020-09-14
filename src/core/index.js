@@ -4,7 +4,7 @@
 "use strict";
 const https = require('https');
 const baseUrl = "api.unl.global"
-let API_KEY = ""; // set this with UnlCore.authenticate(key)
+global.API_KEY = ""; // set this with UnlCore.authenticate(key)
 const LOCATION_ID_REGEX = /^[0123456789bcdefghjkmnpqrstuvwxyz]{3,16}[@#]?[0-9]{0,3}$/
 const COORDINATES_REGEX = /^-?[0-9]{0,2}\.?[0-9]{0,16},\s?-?[0-9]{0,3}\.?[0-9]{0,16}$/
 
@@ -391,17 +391,6 @@ Core.gridLines = function (bounds, precision) {
   return lines;
 };
 
-/**
- * 
- * @param {string} apiKey 
- */
-Core.authenticate = apiKey => {
-  if (!apiKey || typeof(apiKey) === "string") { 
-    console.warn("A value for the API key is required to authenticate. e.g. UnlCore.authenticate(<string>)")
-  }
-  API_KEY = apiKey
-}
-
 const _httpGet = options => {
   return new Promise((resolve, reject) => {
     https.get(options, res => {
@@ -417,13 +406,13 @@ const _httpGet = options => {
  * Returns the human-readable address of a given location (either coordinates or UNL cell id)
  * 
  * @param {string} location - the location (Id or lat-lon coordinates) of the point for which you would like the address
+ * @param {string} apiKey - Your UNL API key used to access the location APIs
  * @param {string} langCode - 2 letter language code of response (default: en)
  * @param {number} count - the number of words in the returned address (only valid for coordinate calls)
  */
-Core.toWords = async (location, langCode = "en", count = 3) => {
-  if (!API_KEY) { 
-    console.error("API key not set. UnlCore.authenticate(...) required for toWords call")
-    return;
+Core.toWords = async (location, apiKey, langCode = "en", count = 3) => {
+  if (!apiKey) { 
+    throw new Error("API key not set. UnlCore.authenticate(...) required for toWords call")
   }
   let type = ""
   let addition = ""
@@ -442,7 +431,7 @@ Core.toWords = async (location, langCode = "en", count = 3) => {
     path: `/v1/location/${type}/${location}?language=${langCode}${addition}`,
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${API_KEY}`
+      Authorization: `Bearer ${apiKey}`
     }
   }
 
@@ -453,12 +442,12 @@ Core.toWords = async (location, langCode = "en", count = 3) => {
  * Returns the coordinates of a given address
  * 
  * @param {string} words - the words representing the point for which you would like the coordinates
+ * @param {string} apiKey - Your UNL API key used to access the location APIs
  * @param {string} langCode - 2 letter language code of response (default: en)
  */
-Core.fromWords = async (words, langCode = "en") => {
-  if (!API_KEY) { 
-    console.error("API key not set. UnlCore.authenticate(...) required for fromWords call")
-    return;
+Core.fromWords = async (words, apiKey, langCode = "en") => {
+  if (!apiKey) { 
+    throw new Error("API key not set. UnlCore.authenticate(...) required for fromWords call")
   }
 
   let options = {
@@ -466,7 +455,7 @@ Core.fromWords = async (words, langCode = "en") => {
     path: `/v1/location/words/${words}?language=${langCode}`,
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${API_KEY}`
+      Authorization: `Bearer ${apiKey}`
     }
   }
   return JSON.parse(await _httpGet(options))

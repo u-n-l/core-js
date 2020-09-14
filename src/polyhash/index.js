@@ -457,11 +457,6 @@ function _isIntersecting(polygon1, polygon2) {
 
 // Return true of polygon2 is inside polygon1
 function _isInside(polygon1, polygon2) {
-  // let poly1 = polygon1.geometry.coordinates[0]
-  // let poly2 = polygon2.geometry.coordinates[0]
-
-  // this is inefficient for large areas
-  // return util.polyContainsPoly(poly1, poly2)
   return turfBooleanContains(polygon1, polygon2);
 }
 

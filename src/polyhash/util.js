@@ -27,6 +27,7 @@ function isPolyInPoly(poly1, poly2) {
  * @param {[[lat, lon]]} poly2 
  */
 function polyContainsPoly(poly1, poly2) {
+  //FIXME: this is inefficient for large areas
   const poly1Bbox = _getBoundingBox(poly1);
   const poly2Bbox = _getBoundingBox(poly2);
   if (!_boundingBoxOverlap(poly1Bbox, poly2Bbox)) {

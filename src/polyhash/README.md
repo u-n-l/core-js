@@ -4,7 +4,7 @@ Encoding geographical areas as locationId based polygons. These polygons are far
 
 ## API
 
-### toPolyhash(points, precision)
+### `toPolyhash`(points, precision)
 
 Converts an array of LatLng coordinates to a locationId trie.
 
@@ -24,7 +24,7 @@ const polyhash = toPolyhash(coordinates);
 */
 ```
 
-### toCluster(points, precision)
+### `toCluster`(points, precision)
 
 Convert a polygon to a cluster of locationIds
 
@@ -43,7 +43,7 @@ cluster = [{precision:6, data:["testek","m","q","r","s","t","v","w","x","y","z",
 */
 ```
 
-### compressPolyhash(polyhash)
+### `compressPolyhash`(polyhash)
 
 Compress a polyhash and return in base64 format.
 
@@ -56,7 +56,7 @@ const compressed = compressPolyhash(polyhash);
 */
 ```
 
-### decompressPolyhash(compressedPolyhash)
+### `decompressPolyhash`(compressedPolyhash)
 
 Decompress a polyhash.
 
@@ -69,7 +69,7 @@ const polyhash = decompressPolyhash(compressedPolyhash);
 */
 ```
 
-### toCoordinates(polyhash)
+### `toCoordinates`(polyhash)
 
 Convert a polyhash back into coordinates.
 
@@ -88,7 +88,7 @@ coordinates = [
 */
 ```
 
-### inflate(polyhash)
+### `inflate`(polyhash)
 
 Convert a polyhash to full locationIds
 
@@ -109,7 +109,7 @@ locationIds = [
 */
 ```
 
-### deflate(locationIds)
+### `deflate`(locationIds)
 
 Convert an array of locationIds to polyhash, used internally for binary compression
 
