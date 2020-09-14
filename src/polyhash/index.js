@@ -148,7 +148,7 @@ function compressPolyhash(polyhash) {
     let blockHeader = 1;
 
     // for each locationId
-    for (let locationIdIndex = 0; locationIdIndex < polyHashBlock.data.length; locationIdIndex++) {
+    for (let locationId of polyHashBlock.data) {
 
       // Block header
       setNextBit(blockHeader)
@@ -162,9 +162,6 @@ function compressPolyhash(polyhash) {
         // Block header is 0 for the rest of the locationIds
         blockHeader = 0;
       }
-
-      // Encode the locationId
-      const locationId = polyHashBlock.data[locationIdIndex];
 
       //for each character in the locationId
       for (let charIndex = 0; charIndex < locationId.length; charIndex++) {

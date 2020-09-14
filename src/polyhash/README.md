@@ -93,14 +93,6 @@ coordinates = [
 Convert a polyhash to full locationIds
 
 ```js
-     [{ precision: 4, data: [ 'drsv' ] },
-      { precision: 5, data: [ 'tjb', '8', '2', '0' ] }]
- deflated = testg|6,ep,r,x,z|7,nb,c,f
-
-
- ['tester','testsp','testsper']
- ['tester', 'sp', 'er' ]
- [['tester', 'sp' ]['testsper']]
 const polyhash = [['tester','sp','j','ek','er'], ['ab12', '34' ]];
 const locationIds = inflate(polyhash);
 
@@ -123,7 +115,7 @@ Convert an array of locationIds to polyhash, used internally for binary compress
 
 ```js
 const locationIds = ['drsv', 'drtjb', 'drtj8', 'drtj2', 'drtj0'];
-const polyhash = deflate(polyhash);
+const polyhash = deflate(locationIds);
 
 /*
 polyhash = [
@@ -139,7 +131,7 @@ Convert an array of locationIds to polyhash
 
 ```js
 const locationIds = ['drsv', 'drtjb', 'drtj8', 'drtj2', 'drtj0'];
-const polyhash = groupByPrefix(polyhash);
+const polyhash = groupByPrefix(locationIds);
 
 /*
 polyhash = [['drsv'], ['drtjb', '8', '2', '0']];
