@@ -1,9 +1,9 @@
 {
   "name": "unl-core",
-  "description": "Gustavo Niemeyer’s geocoding system with elevation",
+  "description": "The core SDK for UNL Location Services",
   "homepage": "https://unl.global",
-  "author": "Emre Turan",
-  "version": "2.0.3",
+  "author": "Emre Turan <emre@unl.global>",
+  "version": "2.1.0",
   "license": "MIT",
   "main": "unl-core.js",
   "repository": {
@@ -11,6 +11,8 @@
     "url": "https://github.com/u-n-l/core-js"
   },
   "keywords": [
+    "polyhash",
+    "cluster",
     "locationId",
     "geocode",
     "geolocation",
@@ -21,14 +23,14 @@
     "unl"
   ],
   "scripts": {
-    "test": "mocha --exit -r esm test.js",
+    "test": "mocha --exit -r esm test/",
     "lint": "eslint unl-core.js"
   },
   "devDependencies": {
     "chai": "^4.0.0",
     "eslint": "^6.0.0",
     "esm": "^3.0.0",
-    "mocha": "^6.0.0"
+    "mocha": "^6.2.3"
   },
   "eslintConfig": {
     "env": {
@@ -115,5 +117,9 @@
         "global"
       ]
     }
+  },
+  "dependencies": {
+    "@turf/boolean-contains": "^6.0.1",
+    "@turf/intersect": "^6.1.3"
   }
 }

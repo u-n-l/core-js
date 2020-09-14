@@ -2,7 +2,7 @@
 /*  UnlCore Test Harness                                (c) Emre Turan 2019 / MIT Licence  */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-import UnlCore from "./unl-core.js";
+import UnlCore from "../unl-core.js";
 
 if (typeof window == "undefined") {
   // node
