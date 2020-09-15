@@ -78,20 +78,16 @@ const decode = [
  * Converts an array of points into a polyhash, locationId-polygon
  * 
  * @param {*} points 
- * @param {*} locationIdPrecision 
- * @param {boolean} shouldDeflate - if false, returned polyhash will have full-length, inflated locationIds (default: false)
+ * @param {*} locationIdPrecision
  */
-function toPolyhash(points, locationIdPrecision = 9, shouldDeflate = true) {
+function toPolyhash(points, locationIdPrecision = 9) {
   if (locationIdPrecision > maxLocationIdPrecision) {
     console.error(`Invalid locationId precision ${locationIdPrecision}. Maximum supported is ${maxLocationIdPrecision}`)
     return null
   }
 
   let polyhash = points.map(point => unl.encode(point[0], point[1], locationIdPrecision))
-  if (shouldDeflate)
-    return deflate(polyhash)
-  
-  return polyhash
+  return deflate(polyhash)
 }
 
 /**
