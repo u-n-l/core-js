@@ -1,7 +1,9 @@
-const unl = require('../core');
-const util = require('./util')
-const turfBooleanContains = require('@turf/boolean-contains').default;
-const turfIntersect = require('@turf/intersect').default;
+const unl = require("../core");
+const turfBooleanContains = require("@turf/boolean-contains").default;
+const turfBooleanDisjoint = require("@turf/boolean-disjoint").default;
+const turfIntersect = require("@turf/intersect").default;
+const turfHelpers = require("@turf/helpers");
+const turfMeta = require("@turf/meta");
 
 const maxLocationIdPrecision = 16;
 
@@ -86,7 +88,7 @@ function toPolyhash(points, locationIdPrecision = 9) {
     return null
   }
 
-  let polyhash = points.map(point => unl.encode(point[0], point[1], locationIdPrecision))
+  const polyhash = points.map(point => unl.encode(point[0], point[1], locationIdPrecision))
   return deflate(polyhash)
 }
 
@@ -263,8 +265,8 @@ function toCluster(points, locationIdPrecision) {
     return null
   }
 
-  const polygon = util.polygon([points]);
-  const cellAlphabet = '0123456789bcdefghjkmnpqrstuvwxyz';
+  const polygon = turfHelpers.polygon([points]);
+  const cellAlphabet = 'bcdefghjkmnpqrstuvwxyz0123456789';
   const clusterCells = []
 
   const queue = [[cellAlphabet.split(''), polygon]];
@@ -289,8 +291,8 @@ function toCluster(points, locationIdPrecision) {
       [box.ne.lat, box.sw.lon],
       [box.ne.lat, box.ne.lon]
     ];
-    //TODO: replace this
-    const cellPolygon = util.polygon([bounds]);
+    const cellPolygon = turfHelpers.polygon([bounds]);
+
     // Check if Cell and polygon are intersecting
     const intersection = _isIntersecting(_testPolygon, cellPolygon);
 
@@ -307,17 +309,16 @@ function toCluster(points, locationIdPrecision) {
           continue
         }
 
-        // Then convert intersection polygon points into locationIds
-        intersectionlocationIdsCells = []
-        
-        for (let coord of _newTestPolygon.geometry.coordinates[0]) {
-          const locationId = unl.encode(coord[0], coord[1], locationIdPrecision)
-          intersectionlocationIdsCells.push(locationId)
-        }
+        // Then convert intersection polygon points into locationIdes
+        intersectionLocationIdsCells = []
+        turfMeta.coordEach(_newTestPolygon, function (currentCoord) {
+          const locationId = unl.encode(currentCoord[0], currentCoord[1], locationIdPrecision)
+          intersectionLocationIdsCells.push(locationId)
+        });
 
         // Then get the locationId that bounds the intersection polygon
         // Done by getting the longest common prefix in all the locationIds
-        const uniq = [...new Set(intersectionlocationIdsCells)].sort()
+        const uniq = [...new Set(intersectionLocationIdsCells)].sort()
         const first = uniq[0];
         const last = uniq.pop();
         const length = first.length;
@@ -445,10 +446,7 @@ function groupByPrefix(locationIds) {
 
 // Return true if polygon1 intersects polygon2
 function _isIntersecting(polygon1, polygon2) {
-  let poly1 = polygon1.geometry.coordinates[0]
-  let poly2 = polygon2.geometry.coordinates[0]
-
-  return util.isPolyInPoly(poly1, poly2)
+  return !turfBooleanDisjoint(polygon1, polygon2)
 }
 
 // Return true of polygon2 is inside polygon1
