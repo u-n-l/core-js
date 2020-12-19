@@ -255,19 +255,46 @@ function decompressPolyhash(compressedPolyhash) {
 
 /**
  * Convert the given polygon into a cluster of locationIds
- * 
- * @param {*} points 
- * @param {*} locationIdPrecision 
+ *
+ * @param {*} polygon, Array of coordinates or GeoJSON polygon
+ * @param {*} locationIdPrecision
  */
-function toCluster(points, locationIdPrecision) {
+function toCluster(inputPolygon, locationIdPrecision) {
+
+  // Check if preceision is in the range.
   if (locationIdPrecision > maxLocationIdPrecision) {
-    console.error(`Invalid locationId precision ${locationIdPrecision}. Maximum supported is ${maxLocationIdPrecision}`)
-    return null
+    console.error(
+      `Invalid locationId precision ${locationIdPrecision}. Maximum supported is ${maxLocationIdPrecision}`
+    );
+    return null;
   }
 
-  const polygon = turfHelpers.polygon([points]);
-  const cellAlphabet = 'bcdefghjkmnpqrstuvwxyz0123456789';
-  const clusterCells = []
+  let polygon = null;
+
+  try {
+    // If the polygon is a GeoJSON feature
+    if (inputPolygon.features) {
+      if (inputPolygon.features.length) {
+        polygon = turfHelpers.polygon(
+          inputPolygon.features[0].geometry.coordinates.map((arr) =>
+            arr.map((coords) => [coords[1], coords[0]])
+          )
+        );
+      }
+    }
+    else {
+      // Polygon is an array of points
+      polygon = turfHelpers.polygon([inputPolygon]);
+    }
+
+  }
+  catch (err) {
+    console.error(`Failed to generate a polygon, reason: ${err}`);
+    return null;
+  }
+
+  const cellAlphabet = "bcdefghjkmnpqrstuvwxyz0123456789";
+  const clusterCells = [];
 
   const queue = [[cellAlphabet.split(''), polygon]];
 
