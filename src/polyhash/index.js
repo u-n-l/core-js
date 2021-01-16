@@ -78,8 +78,8 @@ const decode = [
 
 /**
  * Converts an array of points into a polyhash, locationId-polygon
- * 
- * @param {*} points 
+ *
+ * @param {*} points
  * @param {*} locationIdPrecision
  */
 function toPolyhash(points, locationIdPrecision = 9) {
@@ -94,8 +94,8 @@ function toPolyhash(points, locationIdPrecision = 9) {
 
 /**
  * Returns an array of coordinates, the polygon represented by the given polyhash
- * 
- * @param {*} polyhash 
+ *
+ * @param {*} polyhash
  */
 function toCoordinates(polyhash) {
   return inflate(polyhash).map(locationId => {
@@ -106,8 +106,8 @@ function toCoordinates(polyhash) {
 
 /**
  * Compress the given polyhash object
- * 
- * @param {*} polyhash 
+ *
+ * @param {*} polyhash
  */
 function compressPolyhash(polyhash) {
   const blockHeaderBitSize = 1;
@@ -190,8 +190,8 @@ function compressPolyhash(polyhash) {
 
 /**
  * Return the polyhash object represented by the compressed signature
- * 
- * @param {*} compressedPolyhash 
+ *
+ * @param {*} compressedPolyhash
  */
 function decompressPolyhash(compressedPolyhash) {
   const buffer = Buffer.from(compressedPolyhash, 'base64');
@@ -254,37 +254,37 @@ function decompressPolyhash(compressedPolyhash) {
 }
 
 /**
- * Convert the given polygon into a cluster of locationIds
- *
- * @param {*} polygon, Array of coordinates or GeoJSON polygon
- * @param {*} locationIdPrecision
+ * Helper function to convert GeoJSON or list of coordinates to turf polygon
+ * @param {Object|list} inputPolygon input polygon
+ * @returns {list} list of polygons
  */
-function toCluster(inputPolygon, locationIdPrecision) {
-
-  // Check if preceision is in the range.
-  if (locationIdPrecision > maxLocationIdPrecision) {
-    console.error(
-      `Invalid locationId precision ${locationIdPrecision}. Maximum supported is ${maxLocationIdPrecision}`
-    );
-    return null;
-  }
-
-  let polygon = null;
+function _toTurfPolygon(inputPolygon) {
+    let polygons = []
 
   try {
     // If the polygon is a GeoJSON feature
     if (inputPolygon.features) {
       if (inputPolygon.features.length) {
-        polygon = turfHelpers.polygon(
+          polygons.push(turfHelpers.polygon(
           inputPolygon.features[0].geometry.coordinates.map((arr) =>
             arr.map((coords) => [coords[1], coords[0]])
           )
-        );
+          ));
       }
+    }
+    else if (inputPolygon.geometry && inputPolygon.geometry.type === "MultiPolygon") {
+        const largestPolygon = inputPolygon.geometry.coordinates.forEach(coords => {
+            polygons.push(turfHelpers.polygon(coords))
+        }
+    );
+
+    }
+    else if (inputPolygon.geometry && inputPolygon.geometry.type === "Polygon") {
+        polygons.push(turfHelpers.polygon(inputPolygon.geometry.coordinates))
     }
     else {
       // Polygon is an array of points
-      polygon = turfHelpers.polygon([inputPolygon]);
+        polygons.push(turfHelpers.polygon([inputPolygon]));
     }
 
   }
@@ -293,9 +293,29 @@ function toCluster(inputPolygon, locationIdPrecision) {
     return null;
   }
 
+  return polygons
+}
+
+
+/**
+ * Convert the given polygon into a cluster of locationIds
+ *
+ * @param {*} polygon, Array of coordinates or GeoJSON polygon
+ * @param {*} locationIdPrecision
+ */
+function toCluster(inputPolygon, locationIdPrecision) {
+
   const cellAlphabet = "bcdefghjkmnpqrstuvwxyz0123456789";
   const clusterCells = [];
 
+  // Convert to turf polygon
+  const polygons = _toTurfPolygon(inputPolygon);
+
+  if (!polygons) {
+    return null
+  }
+
+  polygons.forEach( polygon => {
   const queue = [[cellAlphabet.split(''), polygon]];
 
   // Breadth First Search
@@ -373,6 +393,7 @@ function toCluster(inputPolygon, locationIdPrecision) {
       }
     }
   }
+})
   const sortedClusterCells = clusterCells.sort(function (a, b) {
     // Sort string by length then alphabetically
     return a.length - b.length || a.localeCompare(b)
@@ -406,8 +427,8 @@ function inflate(deflatedList) {
 }
 
 /**
- * Return a deflated list of locationIds 
- * 
+ * Return a deflated list of locationIds
+ *
  * @param {*} locationIds
  */
 function deflate(locationIds) {
