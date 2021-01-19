@@ -276,7 +276,7 @@ Core.neighbours = function (locationId) {
  * @throws  Invalid locationId.
  */
 Core.excludeElevation = function (locationIdWithElevation) {
-  if (locationIdWithElevation.length < 0) throw new Error("Invalid locationId");
+  if (locationIdWithElevation === "") throw new Error("Invalid locationId");
   if (
     locationIdWithElevation.includes("#") &&
     locationIdWithElevation.includes("@")
@@ -320,7 +320,7 @@ Core.appendElevation = function (
   elevation,
   elevationType
 ) {
-  if (locationIdWithoutElevation.length < 0)
+  if (locationIdWithoutElevation === "")
     throw new Error("Invalid locationId");
   if (elevation === 0) return locationIdWithoutElevation;
   var elevationChar = "@";
@@ -414,11 +414,11 @@ Core.toWords = async (location, apiKey, langCode = "en", count = 3) => {
   if (!apiKey) { 
     throw new Error("API key not set. UnlCore.authenticate(...) required for toWords call")
   }
-  let type = ""
-  let addition = ""
+  let type = "";
+  let addition = `?language=${langCode}`;
   if (location.match(LOCATION_ID_REGEX)) type = "geohash"
   else if (location.match(COORDINATES_REGEX)) {
-    // addition = `?count=${count}`
+    addition += `&count=${count}`;
     type = "coordinates"
   }
   else {
@@ -428,7 +428,7 @@ Core.toWords = async (location, apiKey, langCode = "en", count = 3) => {
 
   let options = {
     host: baseUrl,
-    path: `/api/v1/${type}/${location}`,
+    path: `/api/v1/location/${type}/${location}`,
     method: 'GET',
     headers: {
       Authorization: ` Bearer ${apiKey}`
