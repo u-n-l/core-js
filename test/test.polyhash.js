@@ -2,7 +2,7 @@ const chai = require("chai");
 const libPolyhash = require("../src/polyhash");
 const expect = chai.expect;
 
-describe("Deflate", function () {
+describe("Polyhash", function () {
   it("deflate() should remove common prefixes and group locationIds by precision", function () {
     const locationIdList = ["drsv", "drtjb", "drtj8", "drtj2", "drtj0"];
     const polyhashList = libPolyhash.deflate(locationIdList);
@@ -11,17 +11,13 @@ describe("Deflate", function () {
       { precision: 5, data: ["tjb", "8", "2", "0"] },
     ]);
   });
-});
 
-describe("groupByPrefix", function () {
   it("groupByPrefix() should remove common prefixes and group locationIds by precision", function () {
     const locationIdList = ["drsv", "drtjb", "drtj8", "drtj2", "drtj0"];
     const polyhashList = libPolyhash.groupByPrefix(locationIdList);
     expect(polyhashList).to.eql([["drsv"], ["drtjb", "8", "2", "0"]]);
   });
-});
 
-describe("inflate", function () {
   it("inflate() should convert polyhash to a full locationId", function () {
     const polyhashList = [
       { precision: 4, data: ["drsv"] },
@@ -30,10 +26,8 @@ describe("inflate", function () {
     const locationIdList = libPolyhash.inflate(polyhashList);
     expect(locationIdList).to.eql(["drsv", "drtjb", "drtj8", "drtj2", "drtj0"]);
   });
-});
 
-describe("Block header test", function () {
-  it("Test block header", function () {
+  it("Block header", function () {
     const polyhash = [
       { precision: 2, data: ["m9"] },
       { precision: 1, data: ["m"] },
@@ -46,34 +40,28 @@ describe("Block header test", function () {
     // Next block header is located after block count [4] and 2 chars [2*6] = 16
     expect((binarydata & (1 << (31 - 16))) != 0).to.be.true;
   });
-});
 
-describe("LocationId char terminator", function () {
-  it("Test locationId char terminator", function () {
+  it("LocationId char terminator", function () {
     const polyhash = [{ precision: 2, data: ["m9"] }];
     const compressed = libPolyhash.compressPolyhash(polyhash);
     const buffer = Buffer.from(compressed, "base64");
     // First char tarminator for 'm' bit is located after block header [1] and block count [4] at position 5
     // expected to be unset
     const binarydata = buffer.readUInt16BE();
-    expect((binarydata & (1 << (15 - 5))) == 0).to.be.true;
+    expect((binarydata & (1 << (15 - 5))) === 0).to.be.true;
     // Next char terminator for '9' is located after 1 char [5] = 11
     expect((binarydata & (1 << (15 - 11))) != 0).to.be.true;
   });
-});
 
-describe("Precision Limit", function () {
-  it("Should return null if precision is bigger than 16", function () {
+  it("precision Limit: Should return null if precision is bigger than 16", function () {
     const polyHash = libPolyhash.toPolyhash([], 19);
     expect(polyHash).to.eql(null);
 
     const cluster = libPolyhash.toCluster([], 19);
     expect(cluster).to.eql(null);
   });
-});
 
-describe("toPolyhash", function () {
-  it("Convert coordinates to a polyhash", function () {
+  it("toPolyhash: Convert coordinates to a polyhash", function () {
     const coords = [
       [42.9252986, -72.2794631],
       [42.9251827, -72.2794363],
@@ -91,7 +79,7 @@ describe("toPolyhash", function () {
     ];
     const polyHash = libPolyhash.toPolyhash(coords, 9);
 
-    expected = [
+    const expected = [
       "drss5nr9y",
       "drss5nr9r",
       "drss5nrcr",
@@ -109,10 +97,8 @@ describe("toPolyhash", function () {
 
     expect(libPolyhash.inflate(polyHash)).to.eql(expected);
   });
-});
 
-describe("toCluster", function () {
-  it("Convert coordinates to a cluster", function () {
+  it("toCluster: Convert coordinates to a cluster", function () {
     const coords = [
       [42.9252986, -72.2794631],
       [42.9251827, -72.2794363],
@@ -130,7 +116,7 @@ describe("toCluster", function () {
     ];
 
     const cluster = libPolyhash.toCluster(coords, 8);
-    expected = [
+    const expected = [
       "drss5nr9",
       "drss5nrc",
       "drss5nrd",
@@ -143,10 +129,8 @@ describe("toCluster", function () {
     ];
     expect(libPolyhash.inflate(cluster)).to.eql(expected);
   });
-});
 
-describe("toCluster Tiny Area High Precision", function () {
-  it("Convert coordinates to a cluster", function () {
+  it("toCluster Tiny Area High Precision: Convert coordinates to a cluster", function () {
     const coords = [
       [4.8983333, 52.3718141],
       [4.8983333, 52.3718116],
@@ -162,10 +146,8 @@ describe("toCluster Tiny Area High Precision", function () {
       libPolyhash.inflate(libPolyhash.toCluster(coords, 13)).length
     ).to.be.greaterThan(1300);
   });
-});
 
-describe("compress", function () {
-  it("Return a compresed polyhash in base64 format", function () {
+  it("compress: Return a compresed polyhash in base64 format", function () {
     const polyhashList = libPolyhash.deflate(["d", "dr"]);
     /*
       |--------+--------+----------+------+-------+--------+-----------+------+-------+---------|
@@ -188,17 +170,13 @@ describe("compress", function () {
     const base64CompressedPolyhash = libPolyhash.compressPolyhash(polyhashList);
     expect(base64CompressedPolyhash).to.eql("jZLc");
   });
-});
 
-describe("decompress", function () {
-  it("Return a compresed polyhash in base64 format", function () {
+  it("decompress: Return a compresed polyhash in base64 format", function () {
     const decompressed = libPolyhash.decompressPolyhash("jZLc");
     expect(["d", "dr"]).to.eql(decompressed);
   });
-});
 
-describe("compress and decompress - plain locationIds", function () {
-  it("compress then decompress should return the original input", function () {
+  it("compress and decompress: plain locationIds", function () {
     const locationIdList = ["drsv", "drtjb", "drtj8", "drtj2", "drtj0"];
 
     const compressed = libPolyhash.compressPolyhash(
@@ -207,10 +185,8 @@ describe("compress and decompress - plain locationIds", function () {
     const decompressed = libPolyhash.decompressPolyhash(compressed);
     expect(locationIdList).to.eql(decompressed);
   });
-});
 
-describe("compress and decompress - coords", function () {
-  it("compress then decompress should return the original input", function () {
+  it("compress and decompress: coords", function () {
     const coords = [
       [42.9252986, -72.2794631],
       [42.9251827, -72.2794363],
@@ -233,10 +209,8 @@ describe("compress and decompress - coords", function () {
     );
     expect(libPolyhash.inflate(cluster)).to.eql(decompressedCluster);
   });
-});
 
-describe("compress and decompress - very large area", function () {
-  it("compress then decompress should return the original input", function () {
+  it("compress and decompress: very large area", function () {
     const coords = [
       [54.140625, 34.3071439],
       [-18.984375, 34.8859309],
@@ -251,10 +225,8 @@ describe("compress and decompress - very large area", function () {
     );
     expect(libPolyhash.inflate(cluster)).to.eql(decompressedCluster);
   });
-});
 
-describe("toCluster GeoJSON featuerCollection object with an empty space in the middle ", function () {
-  it("compress then decompress should return the original input", function () {
+  it("compress and decompress: GeoJSON featuerCollection object with an empty space in the middle", function () {
     const feature = {
       type: "FeatureCollection",
       features: [
@@ -289,10 +261,8 @@ describe("toCluster GeoJSON featuerCollection object with an empty space in the 
     );
     expect(libPolyhash.inflate(cluster)).to.eql(decompressedCluster);
   });
-});
 
-describe("toCluster GeoJSON feature polygon object", function () {
-  it("compress then decompress should return the original input", function () {
+  it("compress and decompress: GeoJSON feature polygon object", function () {
     const feature = {
       type: "Feature",
       properties: {},
@@ -321,10 +291,8 @@ describe("toCluster GeoJSON feature polygon object", function () {
     );
     expect(libPolyhash.inflate(cluster)).to.eql(decompressedCluster);
   });
-});
 
-describe("toCluster GeoJSON feature multi-polygon object", function () {
-  it("compress then decompress should return the original input", function () {
+  it("compress and decompress: GeoJSON feature multi-polygon object", function () {
     const feature = {
       type: "Feature",
       properties: {},
@@ -402,10 +370,8 @@ describe("toCluster GeoJSON feature multi-polygon object", function () {
     );
     expect(libPolyhash.inflate(cluster)).to.eql(decompressedCluster);
   });
-});
 
-describe("toCluster polygon and toCluster coords comparision", function () {
-  it("Clustering a polygon represented as a list coords or a polygon object should return the same cluster", function () {
+  it("compress and decompress: polygon and coords comparision: Clustering a polygon represented as a list coords or a polygon object should return the same cluster", function () {
     const polygon = {
       type: "FeatureCollection",
       features: [
@@ -463,5 +429,5 @@ describe("toCluster polygon and toCluster coords comparision", function () {
       clusterFromCoords
     );
     expect(compressedclusterFromPoly).to.eql(compressedclusterFromCoords);
-  })
+  });
 });
