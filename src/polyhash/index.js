@@ -1,5 +1,6 @@
 const unl = require("../core");
 const turfBooleanContains = require("@turf/boolean-contains").default;
+const turfBooleanOverlap = require("@turf/boolean-overlap").default;
 const turfBooleanDisjoint = require("@turf/boolean-disjoint").default;
 const turfIntersect = require("@turf/intersect").default;
 const turfHelpers = require("@turf/helpers");
@@ -499,7 +500,10 @@ function _isIntersecting(polygon1, polygon2) {
 
 // Return true of polygon2 is inside polygon1
 function _isInside(polygon1, polygon2) {
-  return turfBooleanContains(polygon1, polygon2);
+  // turf overlap is a workaround due to a bug in turfBooleanContain, see https://github.com/Turfjs/turf/issues/1988
+  // Note: turfBooleanOverlap slows downs clustering
+  // TODO: Remove once https://github.com/Turfjs/turf/issues/1988 is fixed.
+  return turfBooleanContains(polygon1, polygon2) && !turfBooleanOverlap(polygon1, polygon2);
 }
 
 // Return intersection area of two polygons
