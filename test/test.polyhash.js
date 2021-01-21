@@ -454,8 +454,8 @@ describe("toCluster polygon and toCluster coords comparision", function () {
       [-72.2794631, 42.9252986],
     ];
 
-    const clusterFromPoly = libPolyhash.toCluster(polygon, 12);
-    const clusterFromCoords = libPolyhash.toCluster(coords, 12);
+    const clusterFromPoly = libPolyhash.toCluster(polygon, 10);
+    const clusterFromCoords = libPolyhash.toCluster(coords, 10);
     const compressedclusterFromPoly = libPolyhash.compressPolyhash(
       clusterFromPoly
     );
@@ -463,5 +463,5 @@ describe("toCluster polygon and toCluster coords comparision", function () {
       clusterFromCoords
     );
     expect(compressedclusterFromPoly).to.eql(compressedclusterFromCoords);
-  });
+  })
 });
