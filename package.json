@@ -119,10 +119,11 @@
     }
   },
   "dependencies": {
-    "@turf/boolean-contains": "^6.2.0-alpha.2",
-    "@turf/boolean-disjoint": "^6.2.0-alpha.2",
-    "@turf/helpers": "^6.2.0-alpha.2",
-    "@turf/intersect": "^6.2.0-alpha.2",
-    "@turf/meta": "^6.2.0-alpha.2"
+    "@turf/boolean-contains": "^6.3.0",
+    "@turf/boolean-disjoint": "^6.3.0",
+    "@turf/boolean-overlap": "^6.3.0",
+    "@turf/helpers": "^6.3.0",
+    "@turf/intersect": "^6.3.0",
+    "@turf/meta": "^6.3.0"
   }
 }

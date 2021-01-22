@@ -1,5 +1,6 @@
 const unl = require("../core");
 const turfBooleanContains = require("@turf/boolean-contains").default;
+const turfBooleanOverlap = require("@turf/boolean-overlap").default;
 const turfBooleanDisjoint = require("@turf/boolean-disjoint").default;
 const turfIntersect = require("@turf/intersect").default;
 const turfHelpers = require("@turf/helpers");
@@ -78,8 +79,8 @@ const decode = [
 
 /**
  * Converts an array of points into a polyhash, locationId-polygon
- * 
- * @param {*} points 
+ *
+ * @param {*} points
  * @param {*} locationIdPrecision
  */
 function toPolyhash(points, locationIdPrecision = 9) {
@@ -94,8 +95,8 @@ function toPolyhash(points, locationIdPrecision = 9) {
 
 /**
  * Returns an array of coordinates, the polygon represented by the given polyhash
- * 
- * @param {*} polyhash 
+ *
+ * @param {*} polyhash
  */
 function toCoordinates(polyhash) {
   return inflate(polyhash).map(locationId => {
@@ -106,8 +107,8 @@ function toCoordinates(polyhash) {
 
 /**
  * Compress the given polyhash object
- * 
- * @param {*} polyhash 
+ *
+ * @param {*} polyhash
  */
 function compressPolyhash(polyhash) {
   const blockHeaderBitSize = 1;
@@ -190,8 +191,8 @@ function compressPolyhash(polyhash) {
 
 /**
  * Return the polyhash object represented by the compressed signature
- * 
- * @param {*} compressedPolyhash 
+ *
+ * @param {*} compressedPolyhash
  */
 function decompressPolyhash(compressedPolyhash) {
   const buffer = Buffer.from(compressedPolyhash, 'base64');
@@ -254,21 +255,68 @@ function decompressPolyhash(compressedPolyhash) {
 }
 
 /**
- * Convert the given polygon into a cluster of locationIds
- * 
- * @param {*} points 
- * @param {*} locationIdPrecision 
+ * Helper function to convert GeoJSON or list of coordinates to turf polygon
+ * @param {Object|list} inputPolygon input polygon
+ * @returns {list} list of polygons
  */
-function toCluster(points, locationIdPrecision) {
-  if (locationIdPrecision > maxLocationIdPrecision) {
-    console.error(`Invalid locationId precision ${locationIdPrecision}. Maximum supported is ${maxLocationIdPrecision}`)
+function _toTurfPolygon(inputPolygon) {
+    let polygons = []
+
+  try {
+    // If the polygon is a GeoJSON feature
+    if (inputPolygon.features) {
+      if (inputPolygon.features.length) {
+          polygons.push(turfHelpers.polygon(
+          inputPolygon.features[0].geometry.coordinates.map((arr) =>
+            arr.map((coords) => [coords[1], coords[0]])
+          )
+          ));
+      }
+    }
+    else if (inputPolygon.geometry && inputPolygon.geometry.type === "MultiPolygon") {
+        const largestPolygon = inputPolygon.geometry.coordinates.forEach(coords => {
+            polygons.push(turfHelpers.polygon(coords))
+        }
+    );
+
+    }
+    else if (inputPolygon.geometry && inputPolygon.geometry.type === "Polygon") {
+        polygons.push(turfHelpers.polygon(inputPolygon.geometry.coordinates))
+    }
+    else {
+      // Polygon is an array of points
+        polygons.push(turfHelpers.polygon([inputPolygon]));
+    }
+
+  }
+  catch (err) {
+    console.error(`Failed to generate a polygon, reason: ${err}`);
+    return null;
+  }
+
+  return polygons
+}
+
+
+/**
+ * Convert the given polygon into a cluster of locationIds
+ *
+ * @param {*} polygon, Array of coordinates or GeoJSON polygon
+ * @param {*} locationIdPrecision
+ */
+function toCluster(inputPolygon, locationIdPrecision) {
+
+  const cellAlphabet = "bcdefghjkmnpqrstuvwxyz0123456789";
+  const clusterCells = [];
+
+  // Convert to turf polygon
+  const polygons = _toTurfPolygon(inputPolygon);
+
+  if (!polygons) {
     return null
   }
 
-  const polygon = turfHelpers.polygon([points]);
-  const cellAlphabet = 'bcdefghjkmnpqrstuvwxyz0123456789';
-  const clusterCells = []
-
+  polygons.forEach( polygon => {
   const queue = [[cellAlphabet.split(''), polygon]];
 
   // Breadth First Search
@@ -346,6 +394,7 @@ function toCluster(points, locationIdPrecision) {
       }
     }
   }
+})
   const sortedClusterCells = clusterCells.sort(function (a, b) {
     // Sort string by length then alphabetically
     return a.length - b.length || a.localeCompare(b)
@@ -379,8 +428,8 @@ function inflate(deflatedList) {
 }
 
 /**
- * Return a deflated list of locationIds 
- * 
+ * Return a deflated list of locationIds
+ *
  * @param {*} locationIds
  */
 function deflate(locationIds) {
@@ -451,7 +500,10 @@ function _isIntersecting(polygon1, polygon2) {
 
 // Return true of polygon2 is inside polygon1
 function _isInside(polygon1, polygon2) {
-  return turfBooleanContains(polygon1, polygon2);
+  // turf overlap is a workaround due to a bug in turfBooleanContain, see https://github.com/Turfjs/turf/issues/1988
+  // Note: turfBooleanOverlap slows downs clustering
+  // TODO: Remove once https://github.com/Turfjs/turf/issues/1988 is fixed.
+  return turfBooleanContains(polygon1, polygon2) && !turfBooleanOverlap(polygon1, polygon2);
 }
 
 // Return intersection area of two polygons

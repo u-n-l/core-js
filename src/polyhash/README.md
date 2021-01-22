@@ -36,7 +36,48 @@ const coordinates = [
   [ 20.679, 73.976 ],  // testek
   [ 20.6955, 73.976 ]  // tester
 
-const cluster = toCluster(polyhash, 6);
+const cluster = toCluster(coordinates, 6);
+
+/*
+cluster = [{precision:6, data:["testek","m","q","r","s","t","v","w","x","y","z","sj","n","p"]}]
+*/
+```
+
+Passing GeoJson polygon
+
+```js
+    const polygon = {
+      type: "FeatureCollection",
+      features: [
+        {
+          id: "46c5c3d3204d8afa8897daeffe91ebc9",
+          type: "Feature",
+          properties: {},
+          geometry: {
+            coordinates: [
+              [
+                [42.9252986, -72.2794631],
+                [42.9251827, -72.2794363],
+                [42.9252043, -72.2790635],
+                [42.9248076, -72.2789964],
+                [42.9248272, -72.2788462],
+                [42.9251297, -72.2788945],
+                [42.9251572, -72.2784975],
+                [42.9252691, -72.2785324],
+                [42.9252416, -72.2788891],
+                [42.9253595, -72.278924],
+                [42.9253575, -72.2790098],
+                [42.9253261, -72.2790071],
+                [42.9252986, -72.2794631],
+              ],
+            ],
+            type: "Polygon",
+          },
+        },
+      ],
+    };
+
+const cluster = toCluster(polygon, 6);
 
 /*
 cluster = [{precision:6, data:["testek","m","q","r","s","t","v","w","x","y","z","sj","n","p"]}]
