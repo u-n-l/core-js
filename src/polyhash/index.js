@@ -333,11 +333,11 @@ function toCluster(inputPolygon, locationIdPrecision) {
     // Convert to bounding box polygon
     const box = unl.bounds(_cell)
     const bounds = [
-      [box.ne.lat, box.ne.lon],
-      [box.sw.lat, box.ne.lon],
-      [box.sw.lat, box.sw.lon],
-      [box.ne.lat, box.sw.lon],
-      [box.ne.lat, box.ne.lon]
+      [box.n, box.e],
+      [box.s, box.e],
+      [box.s, box.w],
+      [box.n, box.w],
+      [box.n, box.e]
     ];
     const cellPolygon = turfHelpers.polygon([bounds]);
 

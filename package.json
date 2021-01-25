@@ -3,7 +3,7 @@
   "description": "The core SDK for UNL Location Services",
   "homepage": "https://unl.global",
   "author": "Emre Turan <emre@unl.global>",
-  "version": "2.1.5",
+  "version": "3.0.0",
   "license": "MIT",
   "main": "unl-core.js",
   "repository": {

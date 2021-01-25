@@ -114,10 +114,10 @@ Core.decode = function (locationId) {
   var bounds = Core.bounds(locationIdWithElevation.locationId); // <-- the hard work
   // now just determine the centre of the cell...
 
-  var latMin = bounds.sw.lat,
-    lonMin = bounds.sw.lon;
-  var latMax = bounds.ne.lat,
-    lonMax = bounds.ne.lon;
+  var latMin = bounds.s,
+    lonMin = bounds.w;
+  var latMax = bounds.n,
+    lonMax = bounds.e;
 
   // cell centre
   var lat = (latMin + latMax) / 2;
@@ -140,7 +140,7 @@ Core.decode = function (locationId) {
  * Returns SW/NE latitude/longitude bounds of specified locationId cell.
  *
  * @param   {string} locationId - Cell that bounds are required of.
- * @returns {{sw: {lat: number, lon: number}, ne: {lat: number, lon: number}}, elevation: number, elevationType: string}
+ * @returns {n: number, e: number, s: number, w: number, elevation: number, elevationType: string}
  * @throws  Invalid locationId.
  */
 Core.bounds = function (locationId) {
@@ -183,8 +183,10 @@ Core.bounds = function (locationId) {
   }
 
   var bounds = {
-    sw: { lat: latMin, lon: lonMin },
-    ne: { lat: latMax, lon: lonMax },
+    n: latMax,
+    e: lonMax,
+    s: latMin,
+    w: lonMin,
     elevation: locationIdWithElevation.elevation,
     elevationType: locationIdWithElevation.elevationType,
   };
@@ -340,23 +342,23 @@ Core.appendElevation = function (
 Core.gridLines = function (bounds, precision) {
   const lines = [];
 
-  const lonMin = bounds.sw.lon;
-  const lonMax = bounds.ne.lon;
+  const lonMin = bounds.w;
+  const lonMax = bounds.e;
 
-  const latMin = bounds.sw.lat;
-  const latMax = bounds.ne.lat;
+  const latMin = bounds.s;
+  const latMax = bounds.n;
 
   const encodePrecision = typeof precision == "undefined" ? 9 : precision;
 
   const swCellLocationId = Core.encode(
-    bounds.sw.lat,
-    bounds.sw.lon,
+    bounds.s,
+    bounds.w,
     encodePrecision
   );
   const swCellBounds = Core.bounds(swCellLocationId);
 
-  const latStart = swCellBounds.ne.lat;
-  const lonStart = swCellBounds.ne.lon;
+  const latStart = swCellBounds.n;
+  const lonStart = swCellBounds.e;
 
   let currentCellLocationId = swCellLocationId;
   let currentCellBounds = swCellBounds;
@@ -370,7 +372,7 @@ Core.gridLines = function (bounds, precision) {
 
     currentCellLocationId = Core.adjacent(currentCellLocationId, "n");
     currentCellBounds = Core.bounds(currentCellLocationId);
-    currentCellNorthLatitude = currentCellBounds.ne.lat;
+    currentCellNorthLatitude = currentCellBounds.n;
   }
 
   currentCellLocationId = swCellLocationId;
@@ -385,7 +387,7 @@ Core.gridLines = function (bounds, precision) {
 
     currentCellLocationId = Core.adjacent(currentCellLocationId, "e");
     currentCellBounds = Core.bounds(currentCellLocationId);
-    currentCellEastLongitude = currentCellBounds.ne.lon;
+    currentCellEastLongitude = currentCellBounds.e;
   }
 
   return lines;
