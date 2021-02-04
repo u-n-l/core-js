@@ -42,16 +42,10 @@ describe("unl-core", function () {
       elevation: 0,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
-        ne: {
-          lat: 57.6507568359375,
-          lon: 10.4150390625,
-        },
-        sw: {
-          lat: 57.645263671875,
-          lon: 10.404052734375,
-        },
+        n: 57.6507568359375,
+        e: 10.4150390625,
+        s: 57.645263671875,
+        w: 10.404052734375,
       },
     });
   });
@@ -62,16 +56,10 @@ describe("unl-core", function () {
       elevation: 3,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
-        ne: {
-          lat: 57.6507568359375,
-          lon: 10.4150390625,
-        },
-        sw: {
-          lat: 57.645263671875,
-          lon: 10.404052734375,
-        },
+        n: 57.6507568359375,
+        e: 10.4150390625,
+        s: 57.645263671875,
+        w: 10.404052734375,
       },
     });
   });
@@ -82,17 +70,11 @@ describe("unl-core", function () {
       elevation: 0,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
-        ne: {
-          lat: 57.6507568359375,
-          lon: 10.4150390625,
+        n: 57.6507568359375,
+        e: 10.4150390625,
+        s: 57.645263671875,
+        w: 10.404052734375,
         },
-        sw: {
-          lat: 57.645263671875,
-          lon: 10.404052734375,
-        },
-      },
     });
   });
   it("decodes Jutland floor -2", function () {
@@ -102,16 +84,10 @@ describe("unl-core", function () {
       elevation: -2,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
-        ne: {
-          lat: 57.6507568359375,
-          lon: 10.4150390625,
-        },
-        sw: {
-          lat: 57.645263671875,
-          lon: 10.404052734375,
-        },
+        n: 57.6507568359375,
+        e: 10.4150390625,
+        s: 57.645263671875,
+        w: 10.404052734375,
       },
     });
   });
@@ -122,16 +98,10 @@ describe("unl-core", function () {
       elevation: 87,
       elevationType: "heightincm",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
-        ne: {
-          lat: 57.6507568359375,
-          lon: 10.4150390625,
-        },
-        sw: {
-          lat: 57.645263671875,
-          lon: 10.404052734375,
-        },
+        n: 57.6507568359375,
+        e: 10.4150390625,
+        s: 57.645263671875,
+        w: 10.404052734375,
       },
     });
   });
@@ -142,16 +112,10 @@ describe("unl-core", function () {
       elevation: 0,
       elevationType: "heightincm",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
-        ne: {
-          lat: 57.6507568359375,
-          lon: 10.4150390625,
-        },
-        sw: {
-          lat: 57.645263671875,
-          lon: 10.404052734375,
-        },
+        n: 57.6507568359375,
+        e: 10.4150390625,
+        s: 57.645263671875,
+        w: 10.404052734375,
       },
     });
   });
@@ -165,16 +129,10 @@ describe("unl-core", function () {
       elevation: 0,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
-        ne: {
-          lat: -25.382537841796875,
-          lon: -49.26544189453125,
-        },
-        sw: {
-          lat: -25.382709503173828,
-          lon: -49.265785217285156,
-        },
+        n: -25.382537841796875,
+        e: -49.26544189453125,
+        s: -25.382709503173828,
+        w: -49.265785217285156,
       },
     });
   });
@@ -185,16 +143,10 @@ describe("unl-core", function () {
       elevation: 0,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
-        ne: {
-          lat: -25.382537841796875,
-          lon: -49.26544189453125,
-        },
-        sw: {
-          lat: -25.382709503173828,
-          lon: -49.265785217285156,
-        },
+        n: -25.382537841796875,
+        e: -49.26544189453125,
+        s: -25.382709503173828,
+        w: -49.265785217285156,
       },
     });
   });
@@ -205,16 +157,10 @@ describe("unl-core", function () {
       elevation: 5,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
-        ne: {
-          lat: -25.382537841796875,
-          lon: -49.26544189453125,
-        },
-        sw: {
-          lat: -25.382709503173828,
-          lon: -49.265785217285156,
-        },
+        n: -25.382537841796875,
+        e: -49.26544189453125,
+        s: -25.382709503173828,
+        w: -49.265785217285156,
       },
     });
   });
@@ -225,16 +171,10 @@ describe("unl-core", function () {
       elevation: 90,
       elevationType: "heightincm",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
-        ne: {
-          lat: -25.382537841796875,
-          lon: -49.26544189453125,
-        },
-        sw: {
-          lat: -25.382709503173828,
-          lon: -49.265785217285156,
-        },
+        n: -25.382537841796875,
+        e: -49.26544189453125,
+        s: -25.382709503173828,
+        w: -49.265785217285156,
       },
     });
   });
@@ -329,41 +269,28 @@ describe("unl-core", function () {
   it("retrieves grid lines with precision 9", function () {
     UnlCore.gridLines(
       {
-        sw: {
-          lat: 46.77210936378606,
-          lon: 23.595436614661565,
-        },
-        ne: {
-          lat: 46.77227194246396,
-          lon: 23.59560827603795,
-        },
+        n: 46.77227194246396,
+        e: 23.59560827603795,
+        s: 46.77210936378606,
+        w: 23.595436614661565,
       },
       9
     ).length.should.equal(7);
   });
   it("retrieves grid lines with no precision specified (default 9)", function () {
     UnlCore.gridLines({
-      sw: {
-        lat: 46.77210936378606,
-        lon: 23.595436614661565,
-      },
-      ne: {
-        lat: 46.77227194246396,
-        lon: 23.59560827603795,
-      },
+      n: 46.77227194246396,
+      e: 23.59560827603795,
+      s: 46.77210936378606,
+      w: 23.595436614661565,
     }).length.should.equal(7);
   });
   it("retrieves grid lines with precision 12", function () {
-    UnlCore.gridLines(
-      {
-        sw: {
-          lat: 46.77210936378606,
-          lon: 23.595436614661565,
-        },
-        ne: {
-          lat: 46.77227194246396,
-          lon: 23.59560827603795,
-        },
+    UnlCore.gridLines({
+        n: 46.77227194246396,
+        e: 23.59560827603795,
+        s: 46.77210936378606,
+        w: 23.595436614661565,
       },
       12
     ).length.should.equal(1481);

@@ -114,22 +114,13 @@ interface Bounds {
 }
 ```
 
-### `BoundsWithElevation`
-
-```js
-interface BoundsWithElevation extends Bounds {
-  elevation: number;
-  elevationType: ElevationType;
-}
-```
-
 ### `PointWithElevation`
 
 ```js
 interface PointWithElevation extends Point {
   elevation: number;
   elevationType: ElevationType;
-  bounds: BoundsWithElevation;
+  bounds: Bounds;
 }
 ```
 
@@ -183,19 +174,15 @@ Returns a Point object:
     lat: centerLat,
     lon: centerLon,
     bounds: {
-        sw: {
-            lat: minLat,
-            lon: minLon
-        },
-        ne: {
-            lat: maxLat,
-            lon: maxLon
-       }
+        n: maxLat,
+        e: maxLon,
+        s: minLat,
+        w: minLon
     }
 }
 ```
 
-### `bounds(locationId: string): BoundsWithElevation`
+### `bounds(locationId: string): Bounds`
 
 Returns SW/NE latitude/longitude bounds of specified locationId cell.
 
@@ -207,16 +194,10 @@ Returns a Bounds object:
 
 ```js
 {
-    sw: {
-        lat: minLat,
-        lon: minLon
-    },
-    ne: {
-        lat: maxLat,
-        lon: maxLon
-    },
-    elevation: 0,
-    elevationType: "floor"
+    n: maxLat,
+    e: maxLon,
+    s: minLat,
+    w: minLon
 }
 ```
 
@@ -226,14 +207,10 @@ Returns the vertical and horizontal lines that can be used to draw a UNL grid in
 
 ```js
 UnlCore.gridLines({
-  sw: {
-    lat: 52.369915397800824,
-    lon: 4.88533463041897,
-  },
-  ne: {
-    lat: 52.38788170348322,
-    lon: 4.91476651006799,
-  },
+  n: 52.38788170348322,
+  e: 4.91476651006799,
+  s: 52.369915397800824,
+  w: 4.88533463041897
 });
 ```
 
