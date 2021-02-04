@@ -105,9 +105,9 @@ Core.encode = function (lat, lon, precision, options) {
  * @throws  Invalid locationId.
  *
  * @example
- *     var latlon = UnlCore.decode('u120fxw'); // => { lat: 52.205, lon: 0.1188, elevation:0, elevationType: floor, bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
- *     var latlon = UnlCore.decode('u120fxw@3'); // => { lat: 52.205, lon: 0.1188, elevation:3, elevationType: floor,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
- *     var latlon = UnlCore.decode('u120fxw#87'); // => { lat: 52.205, lon: 0.1188, elevation:87, elevationType: heightincm,  bounds: {elevation:0, elevationType:floor, ne: {lat: 52.205657958984375, lon: 0.119476318359375}, sw: {lat: 52.20428466796875, lon: 0.11810302734375}}}
+ *     var latlon = UnlCore.decode('u120fxw'); // => { lat: 52.205, lon: 0.1188, elevation:0, elevationType: floor, bounds: { n: 52.205657958984375, e: 0.119476318359375, s: 52.20428466796875, w: 0.11810302734375 }}
+ *     var latlon = UnlCore.decode('u120fxw@3'); // => { lat: 52.205, lon: 0.1188, elevation:3, elevationType: floor,  bounds: { n: 52.205657958984375, e: 0.119476318359375, s: 52.20428466796875, w: 0.11810302734375 }}
+ *     var latlon = UnlCore.decode('u120fxw#87'); // => { lat: 52.205, lon: 0.1188, elevation:87, elevationType: heightincm,  bounds: { n: 52.205657958984375, e: 0.119476318359375, s: 52.20428466796875, w: 0.11810302734375 }}
  */
 Core.decode = function (locationId) {
   var locationIdWithElevation = Core.excludeElevation(locationId);
@@ -186,9 +186,7 @@ Core.bounds = function (locationId) {
     n: latMax,
     e: lonMax,
     s: latMin,
-    w: lonMin,
-    elevation: locationIdWithElevation.elevation,
-    elevationType: locationIdWithElevation.elevationType,
+    w: lonMin
   };
 
   return bounds;

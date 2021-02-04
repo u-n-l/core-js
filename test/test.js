@@ -42,8 +42,6 @@ describe("unl-core", function () {
       elevation: 0,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
         n: 57.6507568359375,
         e: 10.4150390625,
         s: 57.645263671875,
@@ -58,8 +56,6 @@ describe("unl-core", function () {
       elevation: 3,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
         n: 57.6507568359375,
         e: 10.4150390625,
         s: 57.645263671875,
@@ -74,8 +70,6 @@ describe("unl-core", function () {
       elevation: 0,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
         n: 57.6507568359375,
         e: 10.4150390625,
         s: 57.645263671875,
@@ -90,8 +84,6 @@ describe("unl-core", function () {
       elevation: -2,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
         n: 57.6507568359375,
         e: 10.4150390625,
         s: 57.645263671875,
@@ -106,8 +98,6 @@ describe("unl-core", function () {
       elevation: 87,
       elevationType: "heightincm",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
         n: 57.6507568359375,
         e: 10.4150390625,
         s: 57.645263671875,
@@ -122,8 +112,6 @@ describe("unl-core", function () {
       elevation: 0,
       elevationType: "heightincm",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
         n: 57.6507568359375,
         e: 10.4150390625,
         s: 57.645263671875,
@@ -141,8 +129,6 @@ describe("unl-core", function () {
       elevation: 0,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
         n: -25.382537841796875,
         e: -49.26544189453125,
         s: -25.382709503173828,
@@ -157,8 +143,6 @@ describe("unl-core", function () {
       elevation: 0,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
         n: -25.382537841796875,
         e: -49.26544189453125,
         s: -25.382709503173828,
@@ -173,8 +157,6 @@ describe("unl-core", function () {
       elevation: 5,
       elevationType: "floor",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
         n: -25.382537841796875,
         e: -49.26544189453125,
         s: -25.382709503173828,
@@ -189,8 +171,6 @@ describe("unl-core", function () {
       elevation: 90,
       elevationType: "heightincm",
       bounds: {
-        elevation: 0,
-        elevationType: "floor",
         n: -25.382537841796875,
         e: -49.26544189453125,
         s: -25.382709503173828,
@@ -306,8 +286,7 @@ describe("unl-core", function () {
     }).length.should.equal(7);
   });
   it("retrieves grid lines with precision 12", function () {
-    UnlCore.gridLines(
-      {
+    UnlCore.gridLines({
         n: 46.77227194246396,
         e: 23.59560827603795,
         s: 46.77210936378606,
