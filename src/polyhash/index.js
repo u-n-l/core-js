@@ -5,6 +5,7 @@ const turfBooleanDisjoint = require("@turf/boolean-disjoint").default;
 const turfIntersect = require("@turf/intersect").default;
 const turfHelpers = require("@turf/helpers");
 const turfMeta = require("@turf/meta");
+const turf = require("@turf/turf");
 
 const maxLocationIdPrecision = 16;
 
@@ -331,15 +332,8 @@ function toCluster(inputPolygon, locationIdPrecision) {
     const _cell = queue[0][0].shift()
     const _testPolygon = queue[0][1]
     // Convert to bounding box polygon
-    const box = unl.bounds(_cell)
-    const bounds = [
-      [box.n, box.e],
-      [box.s, box.e],
-      [box.s, box.w],
-      [box.n, box.w],
-      [box.n, box.e]
-    ];
-    const cellPolygon = turfHelpers.polygon([bounds]);
+    const { n, e, s, w } = unl.bounds(_cell);
+    const cellPolygon = turf.bboxPolygon([w,s,e,n]);
 
     // Check if Cell and polygon are intersecting
     const intersection = _isIntersecting(_testPolygon, cellPolygon);
@@ -360,7 +354,7 @@ function toCluster(inputPolygon, locationIdPrecision) {
         // Then convert intersection polygon points into locationIdes
         intersectionLocationIdsCells = []
         turfMeta.coordEach(_newTestPolygon, function (currentCoord) {
-          const locationId = unl.encode(currentCoord[0], currentCoord[1], locationIdPrecision)
+          const locationId = unl.encode(currentCoord[1], currentCoord[0], locationIdPrecision)
           intersectionLocationIdsCells.push(locationId)
         });
 
