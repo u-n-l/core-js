@@ -63,19 +63,19 @@ describe("Polyhash", function () {
 
   it("toPolyhash: Convert coordinates to a polyhash", function () {
     const coords = [
-      [42.9252986, -72.2794631],
-      [42.9251827, -72.2794363],
-      [42.9252043, -72.2790635],
-      [42.9248076, -72.2789964],
-      [42.9248272, -72.2788462],
-      [42.9251297, -72.2788945],
-      [42.9251572, -72.2784975],
-      [42.9252691, -72.2785324],
-      [42.9252416, -72.2788891],
-      [42.9253595, -72.278924],
-      [42.9253575, -72.2790098],
-      [42.9253261, -72.2790071],
-      [42.9252986, -72.2794631],
+      [42.9252986,-72.2794631],
+      [42.9251827,-72.2794363],
+      [42.9252043,-72.2790635],
+      [42.9248076,-72.2789964],
+      [42.9248272,-72.2788462],
+      [42.9251297,-72.2788945],
+      [42.9251572,-72.2784975],
+      [42.9252691,-72.2785324],
+      [42.9252416,-72.2788891],
+      [42.9253595,-72.278924],
+      [42.9253575,-72.2790098],
+      [42.9253261,-72.2790071],
+      [42.9252986,-72.2794631],
     ];
     const polyHash = libPolyhash.toPolyhash(coords, 9);
 
@@ -117,15 +117,19 @@ describe("Polyhash", function () {
 
     const cluster = libPolyhash.toCluster(coords, 8);
     const expected = [
-      "drss5nr9",
-      "drss5nrc",
-      "drss5nrd",
-      "drss5nrf",
-      "drss5q0p",
-      "drss5q20",
-      "drss5q21",
-      "drss5q23",
-      "drss5q24",
+      "hgnsbccj",
+      "hgnsbccm",
+      "hgnsbccn",
+      "hgnsbccp",
+      "hgnsbccq",
+      "hgnsbccr",
+      "hgnsbf0b",
+      "hgnsbf0c",
+      "hgnsbf10",
+      "hgnsbf11",
+      "hgnsbf12",
+      "hgnsbf14",
+      "hgnsbf15"
     ];
     expect(libPolyhash.inflate(cluster)).to.eql(expected);
   });

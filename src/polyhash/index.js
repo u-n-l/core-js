@@ -5,6 +5,7 @@ const turfBooleanDisjoint = require("@turf/boolean-disjoint").default;
 const turfIntersect = require("@turf/intersect").default;
 const turfHelpers = require("@turf/helpers");
 const turfMeta = require("@turf/meta");
+const turfBboxPolygon = require("@turf/bbox-polygon").default;
 
 const maxLocationIdPrecision = 16;
 
@@ -80,8 +81,8 @@ const decode = [
 /**
  * Converts an array of points into a polyhash, locationId-polygon
  *
- * @param {*} points
- * @param {*} locationIdPrecision
+ * @param {point[]} points
+ * @param {int} locationIdPrecision
  */
 function toPolyhash(points, locationIdPrecision = 9) {
   if (locationIdPrecision > maxLocationIdPrecision) {
@@ -331,15 +332,8 @@ function toCluster(inputPolygon, locationIdPrecision) {
     const _cell = queue[0][0].shift()
     const _testPolygon = queue[0][1]
     // Convert to bounding box polygon
-    const box = unl.bounds(_cell)
-    const bounds = [
-      [box.n, box.e],
-      [box.s, box.e],
-      [box.s, box.w],
-      [box.n, box.w],
-      [box.n, box.e]
-    ];
-    const cellPolygon = turfHelpers.polygon([bounds]);
+    const { n, e, s, w } = unl.bounds(_cell);
+    const cellPolygon = turfBboxPolygon([w,s,e,n]);
 
     // Check if Cell and polygon are intersecting
     const intersection = _isIntersecting(_testPolygon, cellPolygon);
@@ -357,12 +351,8 @@ function toCluster(inputPolygon, locationIdPrecision) {
           continue
         }
 
-        // Then convert intersection polygon points into locationIdes
-        intersectionLocationIdsCells = []
-        turfMeta.coordEach(_newTestPolygon, function (currentCoord) {
-          const locationId = unl.encode(currentCoord[0], currentCoord[1], locationIdPrecision)
-          intersectionLocationIdsCells.push(locationId)
-        });
+        // Then convert intersection polygon points into locationIds
+        const intersectionLocationIdsCells = turfMeta.coordAll(_newTestPolygon).map(x => unl.encode(x[1], x[0], locationIdPrecision))
 
         // Then get the locationId that bounds the intersection polygon
         // Done by getting the longest common prefix in all the locationIds
