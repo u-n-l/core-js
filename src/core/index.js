@@ -2,11 +2,11 @@
 /* LocationId encoding/decoding and associated functions   (c) Emre Turan 2019 / MIT Licence  */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 "use strict";
-const https = require('https');
-const baseUrl = "map.unl.global"
-global.API_KEY = ""; // set this with UnlCore.authenticate(key)
-const LOCATION_ID_REGEX = /^[0123456789bcdefghjkmnpqrstuvwxyz]{3,16}[@#]?[0-9]{0,3}$/
-const COORDINATES_REGEX = /^-?[0-9]{0,2}\.?[0-9]{0,16},\s?-?[0-9]{0,3}\.?[0-9]{0,16}$/
+// const https = require('https');
+// const baseUrl = "map.unl.global"
+// global.API_KEY = ""; // set this with UnlCore.authenticate(key)
+// const LOCATION_ID_REGEX = /^[0123456789bcdefghjkmnpqrstuvwxyz]{3,16}[@#]?[0-9]{0,3}$/
+// const COORDINATES_REGEX = /^-?[0-9]{0,2}\.?[0-9]{0,16},\s?-?[0-9]{0,3}\.?[0-9]{0,16}$/
 
 /**
  * UnlCore: UNL’s geocoding system.
@@ -203,8 +203,7 @@ Core.bounds = function (locationId) {
 Core.adjacent = function (locationId, direction) {
   // based on github.com/davetroy/geohash-js
 
-  var locationIdWithoutElevation = Core.excludeElevation(locationId)
-    .locationId;
+  var locationIdWithoutElevation = Core.excludeElevation(locationId).locationId;
   var elevation = Core.excludeElevation(locationId).elevation;
   var elevationType = Core.excludeElevation(locationId).elevationType;
 
@@ -320,8 +319,7 @@ Core.appendElevation = function (
   elevation,
   elevationType
 ) {
-  if (locationIdWithoutElevation === "")
-    throw new Error("Invalid locationId");
+  if (locationIdWithoutElevation === "") throw new Error("Invalid locationId");
   if (elevation === 0) return locationIdWithoutElevation;
   var elevationChar = "@";
   if (elevationType === "heightincm") elevationChar = "#";
@@ -391,74 +389,74 @@ Core.gridLines = function (bounds, precision) {
   return lines;
 };
 
-const _httpGet = options => {
-  return new Promise((resolve, reject) => {
-    https.get(options, res => {
-      res.setEncoding('utf8');
-      let body = ''; 
-      res.on('data', chunk => body += chunk);
-      res.on('end', () => resolve(body));
-    }).on('error', reject);
-  });
-};
+// const _httpGet = options => {
+//   return new Promise((resolve, reject) => {
+//     https.get(options, res => {
+//       res.setEncoding('utf8');
+//       let body = '';
+//       res.on('data', chunk => body += chunk);
+//       res.on('end', () => resolve(body));
+//     }).on('error', reject);
+//   });
+// };
 
-/**
- * Returns the human-readable address of a given location (either coordinates or UNL cell id)
- * 
- * @param {string} location - the location (Id or lat-lon coordinates) of the point for which you would like the address
- * @param {string} apiKey - Your UNL API key used to access the location APIs
- * @param {string} langCode - 2 letter language code of response (default: en)
- * @param {number} count - the number of words in the returned address (only valid for coordinate calls)
- */
-Core.toWords = async (location, apiKey, langCode = "en", count = 3) => {
-  if (!apiKey) { 
-    throw new Error("API key not set. UnlCore.authenticate(...) required for toWords call")
-  }
-  let type = "";
-  let addition = `?language=${langCode}`;
-  if (location.match(LOCATION_ID_REGEX)) type = "geohash"
-  else if (location.match(COORDINATES_REGEX)) {
-    addition += `&count=${count}`;
-    type = "coordinates"
-  }
-  else {
-    console.error(`Could not interpret your input, ${location}. Expected a locationId or lat,lon coordinates.`)
-    return;
-  }
+// /**
+//  * Returns the human-readable address of a given location (either coordinates or UNL cell id)
+//  *
+//  * @param {string} location - the location (Id or lat-lon coordinates) of the point for which you would like the address
+//  * @param {string} apiKey - Your UNL API key used to access the location APIs
+//  * @param {string} langCode - 2 letter language code of response (default: en)
+//  * @param {number} count - the number of words in the returned address (only valid for coordinate calls)
+//  */
+// Core.toWords = async (location, apiKey, langCode = "en", count = 3) => {
+//   if (!apiKey) {
+//     throw new Error("API key not set. UnlCore.authenticate(...) required for toWords call")
+//   }
+//   let type = "";
+//   let addition = `?language=${langCode}`;
+//   if (location.match(LOCATION_ID_REGEX)) type = "geohash"
+//   else if (location.match(COORDINATES_REGEX)) {
+//     addition += `&count=${count}`;
+//     type = "coordinates"
+//   }
+//   else {
+//     console.error(`Could not interpret your input, ${location}. Expected a locationId or lat,lon coordinates.`)
+//     return;
+//   }
 
-  let options = {
-    host: baseUrl,
-    path: `/api/v1/location/${type}/${location}`,
-    method: 'GET',
-    headers: {
-      Authorization: ` Bearer ${apiKey}`
-    }
-  }
+//   let options = {
+//     host: baseUrl,
+//     path: `/api/v1/location/${type}/${location}`,
+//     method: 'GET',
+//     headers: {
+//       Authorization: ` Bearer ${apiKey}`
+//     }
+//   }
 
-  return JSON.parse(await _httpGet(options))
-}
+//   return JSON.parse(await _httpGet(options))
+// }
 
-/**
- * Returns the coordinates of a given address
- * 
- * @param {string} words - the words representing the point for which you would like the coordinates
- * @param {string} apiKey - Your UNL API key used to access the location APIs
- * @param {string} langCode - 2 letter language code of response (default: en)
- */
-Core.fromWords = async (words, apiKey, langCode = "en") => {
-  if (!apiKey) { 
-    throw new Error("API key not set. UnlCore.authenticate(...) required for fromWords call")
-  }
+// /**
+//  * Returns the coordinates of a given address
+//  *
+//  * @param {string} words - the words representing the point for which you would like the coordinates
+//  * @param {string} apiKey - Your UNL API key used to access the location APIs
+//  * @param {string} langCode - 2 letter language code of response (default: en)
+//  */
+// Core.fromWords = async (words, apiKey, langCode = "en") => {
+//   if (!apiKey) {
+//     throw new Error("API key not set. UnlCore.authenticate(...) required for fromWords call")
+//   }
 
-  let options = {
-    host: baseUrl,
-    path: `/api/v1/location/words/${words}?language=${langCode}`,
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${apiKey}`
-    }
-  }
-  return JSON.parse(await _httpGet(options))
-}
+//   let options = {
+//     host: baseUrl,
+//     path: `/api/v1/location/words/${words}?language=${langCode}`,
+//     method: 'GET',
+//     headers: {
+//       Authorization: `Bearer ${apiKey}`
+//     }
+//   }
+//   return JSON.parse(await _httpGet(options))
+// }
 
 if (typeof module != "undefined" && module.exports) module.exports = Core; // CommonJS, node.js
