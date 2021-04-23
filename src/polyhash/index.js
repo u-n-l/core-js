@@ -79,31 +79,113 @@ const decode = [
 ];
 
 /**
- * Converts an array of points into a polyhash, locationId-polygon
+ * Converts a geometry into a polyhash, locationId-polygon
  *
- * @param {point[]} points
- * @param {int} locationIdPrecision
+ * @param {*} input, coordindates, locationIds, polygon or stringId
+ * @param {*} locationIdPrecision
  */
-function toPolyhash(points, locationIdPrecision = 9) {
+function toPolyhash(input, locationIdPrecision = 9) {
   if (locationIdPrecision > maxLocationIdPrecision) {
     console.error(`Invalid locationId precision ${locationIdPrecision}. Maximum supported is ${maxLocationIdPrecision}`)
     return null
   }
 
-  const polyhash = points.map(point => unl.encode(point[0], point[1], locationIdPrecision))
-  return deflate(polyhash)
+  let result = null;
+  if (typeof input === 'string' || input instanceof String) {
+    result = input;
+  }
+  else {
+    const locationIds = toLocationIds(input)
+    result = compress(locationIds)
+  }
+  return result
 }
 
 /**
- * Returns an array of coordinates, the polygon represented by the given polyhash
+ * Convert a geometry into a list of coordinates
  *
- * @param {*} polyhash
+ * @param {*} input, coordindates, locationIds, polygon or stringId
+ * @param {*} locationIdPrecision
  */
-function toCoordinates(polyhash) {
-  return inflate(polyhash).map(locationId => {
-    const point = unl.decode(locationId);
-    return [parseFloat(point.lon.toFixed(6)), parseFloat(point.lat.toFixed(6))]
-  });
+function toCoordinates(input) {
+  try {
+    let result = [];
+    if (input.features) {
+      if (input.features.length) {
+        result.push(...
+          input.features[0].geometry.coordinates.flatMap((arr) =>
+            arr.map((coords) => [coords[0], coords[1]])
+          )
+        );
+      }
+    } else if (input.geometry && input.geometry.type === "MultiPolygon") {
+      const largestPolygon = input.geometry.coordinates.forEach((coords) => {
+        result.push(...coords);
+      });
+    } else if (input.geometry && input.geometry.type === "Polygon") {
+      result.push(...input.geometry.coordinates);
+    }
+    // Array of coords or lists
+    else if (Array.isArray(input) && input.length) {
+      // array of coords
+      if (Array.isArray(input[0])) {
+        result = input;
+      }
+      // Array of locationId
+      else {
+        result = input.map((locationId) => {
+          const point = unl.decode(locationId);
+          return [
+            parseFloat(point.lon.toFixed(6)),
+            parseFloat(point.lat.toFixed(6)),
+          ];
+        });
+      }
+    }
+    else {
+      // compressed string Id
+      const locationIs = decompress(input)
+      result = toCoordinates(locationIs)      
+    }
+    // polyhash
+    return result;
+  } catch (err) {
+    console.error(
+      `Failed to convert ${JSON.stringify(
+        input
+      )} to coordinates, reason: ${err}`
+    );
+    return null;
+  }
+}
+
+/**
+ * Converts a geometry into a list of locationIds
+ *
+ * @param {*} input, coordindates, locationIds, polygon or stringId
+ * @param {*} locationIdPrecision
+ */
+ function toLocationIds(input, locationIdPrecision = 9) {
+  try {
+    let result = [];
+    // If it is a list of location ids
+    if (Array.isArray(input) && input.length &&
+    typeof input[0] === 'string' || input[0] instanceof String) {
+        result = input;
+    }
+    else {
+      const coords =  toCoordinates(input)
+      result = coords.map(x => unl.encode(x[1], x[0], locationIdPrecision))
+    }
+    return result;
+  } catch (err) {
+    console.error(
+      `Failed to convert ${JSON.stringify(
+        input
+      )} to location ids, reason: ${err}`
+    );
+    return null;
+  }
 }
 
 /**
@@ -111,7 +193,8 @@ function toCoordinates(polyhash) {
  *
  * @param {*} polyhash
  */
-function compressPolyhash(polyhash) {
+function compress(locationIds) {
+  let polyhash = deflate(locationIds)
   const blockHeaderBitSize = 1;
   const blockPrecisionHeaderBitSize = 4;
   const charBitSize = 6;
@@ -195,7 +278,7 @@ function compressPolyhash(polyhash) {
  *
  * @param {*} compressedPolyhash
  */
-function decompressPolyhash(compressedPolyhash) {
+function decompress(compressedPolyhash) {
   const buffer = Buffer.from(compressedPolyhash, 'base64');
 
   const result = [];
@@ -285,8 +368,9 @@ function _toTurfPolygon(inputPolygon) {
         polygons.push(turfHelpers.polygon(inputPolygon.geometry.coordinates))
     }
     else {
+      const coords = toCoordinates(inputPolygon)
       // Polygon is an array of points
-        polygons.push(turfHelpers.polygon([inputPolygon]));
+        polygons.push(turfHelpers.polygon([coords]));
     }
 
   }
@@ -300,18 +384,22 @@ function _toTurfPolygon(inputPolygon) {
 
 
 /**
- * Convert the given polygon into a cluster of locationIds
+ * Convert a geometry into a cluster of locationIds
  *
- * @param {*} polygon, Array of coordinates or GeoJSON polygon
+ * @param {*} input, coordindates, locationIds, polygon or stringId
  * @param {*} locationIdPrecision
  */
-function toCluster(inputPolygon, locationIdPrecision) {
+function toCluster(input, locationIdPrecision) {
 
+  if (locationIdPrecision === undefined) {
+    console.error("toCluster: locationIdPrecision must be set")
+    return null
+  }
   const cellAlphabet = "bcdefghjkmnpqrstuvwxyz0123456789";
   const clusterCells = [];
 
   // Convert to turf polygon
-  const polygons = _toTurfPolygon(inputPolygon);
+  const polygons = _toTurfPolygon(input);
 
   if (!polygons) {
     return null
@@ -389,7 +477,7 @@ function toCluster(inputPolygon, locationIdPrecision) {
     // Sort string by length then alphabetically
     return a.length - b.length || a.localeCompare(b)
   })
-  return deflate(sortedClusterCells);
+  return sortedClusterCells;
 }
 
 /**
@@ -505,9 +593,10 @@ function _getIntesection(polygon1, polygon2) {
 module.exports = {
   toPolyhash,
   toCoordinates,
-  compressPolyhash,
-  decompressPolyhash,
+  toLocationIds,
   toCluster,
+  compressPolyhash: compress,
+  decompressPolyhash: decompress,
   inflate,
   deflate,
   groupByPrefix
