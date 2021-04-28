@@ -81,7 +81,7 @@ const decode = [
 /**
  * Converts a geometry into a polyhash, locationId-polygon
  *
- * @param {*} input, coordindates, locationIds, polygon or stringId
+ * @param {*} input, coordinates, locationIds, polygon or stringId
  * @param {*} locationIdPrecision
  */
 function toPolyhash(input, locationIdPrecision = 9) {
@@ -104,7 +104,7 @@ function toPolyhash(input, locationIdPrecision = 9) {
 /**
  * Convert a geometry into a list of coordinates
  *
- * @param {*} input, coordindates, locationIds, polygon or stringId
+ * @param {*} input, coordinates, locationIds, polygon or stringId
  * @param {*} locationIdPrecision
  */
 function toCoordinates(input) {
@@ -162,7 +162,7 @@ function toCoordinates(input) {
 /**
  * Converts a geometry into a list of locationIds
  *
- * @param {*} input, coordindates, locationIds, polygon or stringId
+ * @param {*} input, coordinates, locationIds, polygon or stringId
  * @param {*} locationIdPrecision
  */
  function toLocationIds(input, locationIdPrecision = 9) {
@@ -174,7 +174,7 @@ function toCoordinates(input) {
         result = input;
     }
     else {
-      const coords =  toCoordinates(input)
+      const coords = toCoordinates(input)
       result = coords.map(x => unl.encode(x[1], x[0], locationIdPrecision))
     }
     return result;
@@ -370,7 +370,7 @@ function _toTurfPolygon(inputPolygon) {
     else {
       const coords = toCoordinates(inputPolygon)
       // Polygon is an array of points
-        polygons.push(turfHelpers.polygon([coords]));
+      polygons.push(turfHelpers.polygon([coords]));
     }
 
   }
@@ -386,10 +386,10 @@ function _toTurfPolygon(inputPolygon) {
 /**
  * Convert a geometry into a cluster of locationIds
  *
- * @param {*} input, coordindates, locationIds, polygon or stringId
+ * @param {*} input, coordinates, locationIds, polygon or stringId
  * @param {*} locationIdPrecision
  */
-function toCluster(input, locationIdPrecision) {
+function toCluster(input, locationIdPrecision = 9) {
 
   if (locationIdPrecision === undefined) {
     console.error("toCluster: locationIdPrecision must be set")
@@ -595,8 +595,8 @@ module.exports = {
   toCoordinates,
   toLocationIds,
   toCluster,
-  compressPolyhash: compress,
-  decompressPolyhash: decompress,
+  compress,
+  decompress,
   inflate,
   deflate,
   groupByPrefix

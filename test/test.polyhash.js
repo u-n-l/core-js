@@ -29,7 +29,7 @@ describe("Polyhash", function () {
 
   it("Block header", function () {
     const polyhash = ["m9", "mmm"];
-    const compressed = libPolyhash.compressPolyhash(polyhash);
+    const compressed = libPolyhash.compress(polyhash);
     const buffer = Buffer.from(compressed, "base64");
     const binarydata = buffer.readUInt32BE();
     // First block header is located at bit 0, expected to be set
@@ -40,7 +40,7 @@ describe("Polyhash", function () {
 
   it("LocationId char terminator", function () {
     const polyhash = ["m9"];
-    const compressed = libPolyhash.compressPolyhash(polyhash);
+    const compressed = libPolyhash.compress(polyhash);
     const buffer = Buffer.from(compressed, "base64");
     // First char tarminator for 'm' bit is located after block header [1] and block count [4] at position 5
     // expected to be unset
@@ -590,19 +590,19 @@ describe("Polyhash", function () {
       |--------+--------+--------+--------|
       */
 
-    const base64CompressedPolyhash = libPolyhash.compressPolyhash(polyhashList);
+    const base64CompressedPolyhash = libPolyhash.compress(polyhashList);
     expect(base64CompressedPolyhash).to.eql("jZLc");
   });
 
   it("decompress: Return a compresed polyhash in base64 format", function () {
-    const decompressed = libPolyhash.decompressPolyhash("jZLc");
+    const decompressed = libPolyhash.decompress("jZLc");
     expect(["d", "dr"]).to.eql(decompressed);
   });
 
   it("compress and decompress: plain locationIds", function () {
     const locationIdList = ["drsv", "drtjb", "drtj8", "drtj2", "drtj0"];
-    const compressed = libPolyhash.compressPolyhash(locationIdList);
-    const decompressed = libPolyhash.decompressPolyhash(compressed);
+    const compressed = libPolyhash.compress(locationIdList);
+    const decompressed = libPolyhash.decompress(compressed);
     expect(locationIdList).to.eql(decompressed);
   });
 
@@ -623,8 +623,8 @@ describe("Polyhash", function () {
       [42.9252986, -72.2794631],
     ];
     const cluster = libPolyhash.toCluster(coords, 9);
-    const compressedCluster = libPolyhash.compressPolyhash(cluster);
-    const decompressedCluster = libPolyhash.decompressPolyhash(
+    const compressedCluster = libPolyhash.compress(cluster);
+    const decompressedCluster = libPolyhash.decompress(
       compressedCluster
     );
     expect(cluster).to.eql(decompressedCluster);
@@ -639,8 +639,8 @@ describe("Polyhash", function () {
       [54.140625, 34.3071439],
     ];
     const cluster = libPolyhash.toCluster(coords, 5);
-    const compressedCluster = libPolyhash.compressPolyhash(cluster);
-    const decompressedCluster = libPolyhash.decompressPolyhash(
+    const compressedCluster = libPolyhash.compress(cluster);
+    const decompressedCluster = libPolyhash.decompress(
       compressedCluster
     );
     expect(cluster).to.eql(decompressedCluster);
@@ -675,8 +675,8 @@ describe("Polyhash", function () {
       ],
     };
     const cluster = libPolyhash.toCluster(feature, 10);
-    const compressedCluster = libPolyhash.compressPolyhash(cluster);
-    const decompressedCluster = libPolyhash.decompressPolyhash(
+    const compressedCluster = libPolyhash.compress(cluster);
+    const decompressedCluster = libPolyhash.decompress(
       compressedCluster
     );
     expect(cluster).to.eql(decompressedCluster);
@@ -705,8 +705,8 @@ describe("Polyhash", function () {
       },
     };
     const cluster = libPolyhash.toCluster(feature, 10);
-    const compressedCluster = libPolyhash.compressPolyhash(cluster);
-    const decompressedCluster = libPolyhash.decompressPolyhash(
+    const compressedCluster = libPolyhash.compress(cluster);
+    const decompressedCluster = libPolyhash.decompress(
       compressedCluster
     );
     expect(cluster).to.eql(decompressedCluster);
@@ -784,8 +784,8 @@ describe("Polyhash", function () {
       },
     };
     const cluster = libPolyhash.toCluster(feature, 10);
-    const compressedCluster = libPolyhash.compressPolyhash(cluster);
-    const decompressedCluster = libPolyhash.decompressPolyhash(
+    const compressedCluster = libPolyhash.compress(cluster);
+    const decompressedCluster = libPolyhash.decompress(
       compressedCluster
     );
     expect(cluster).to.eql(decompressedCluster);
@@ -842,10 +842,10 @@ describe("Polyhash", function () {
 
     const clusterFromPoly = libPolyhash.toCluster(polygon, 10);
     const clusterFromCoords = libPolyhash.toCluster(coords, 10);
-    const compressedclusterFromPoly = libPolyhash.compressPolyhash(
+    const compressedclusterFromPoly = libPolyhash.compress(
       clusterFromPoly
     );
-    const compressedclusterFromCoords = libPolyhash.compressPolyhash(
+    const compressedclusterFromCoords = libPolyhash.compress(
       clusterFromCoords
     );
     expect(compressedclusterFromPoly).to.eql(compressedclusterFromCoords);
