@@ -5,6 +5,7 @@ const turfBooleanDisjoint = require("@turf/boolean-disjoint").default;
 const turfIntersect = require("@turf/intersect").default;
 const turfHelpers = require("@turf/helpers");
 const turfMeta = require("@turf/meta");
+const turfInvariant = require("@turf/invariant")
 const turfBboxPolygon = require("@turf/bbox-polygon").default;
 
 const maxLocationIdPrecision = 16;
@@ -86,47 +87,41 @@ const decode = [
  */
 function toPolyhash(input, locationIdPrecision = 9) {
   if (locationIdPrecision > maxLocationIdPrecision) {
-    console.error(`Invalid locationId precision ${locationIdPrecision}. Maximum supported is ${maxLocationIdPrecision}`)
-    return null
+    console.error(
+      `Invalid locationId precision ${locationIdPrecision}. Maximum supported is ${maxLocationIdPrecision}`
+    );
+    return null;
   }
 
   let result = null;
-  if (typeof input === 'string' || input instanceof String) {
+  if (typeof input === "string" || input instanceof String) {
     result = input;
+  } else {
+    if (turfInvariant.getType(input) !== undefined) {
+      const coords = turfMeta.coordAll(input);
+
+      if (coords) {
+        input = coords;
+      }
+    }
+    //
+    const locationIds = toLocationIds(input);
+    result = compress(locationIds);
   }
-  else {
-    const locationIds = toLocationIds(input)
-    result = compress(locationIds)
-  }
-  return result
+  return result;
 }
 
 /**
  * Convert a geometry into a list of coordinates
  *
- * @param {*} input, coordinates, locationIds, polygon or stringId
+ * @param {*} input, coordinates, locationIds or stringId
  * @param {*} locationIdPrecision
  */
 function toCoordinates(input) {
   try {
     let result = [];
-    if (input.features) {
-      if (input.features.length) {
-        result.push(...
-          input.features[0].geometry.coordinates.flatMap((arr) =>
-            arr.map((coords) => [coords[0], coords[1]])
-          )
-        );
-      }
-    } else if (input.geometry && input.geometry.type === "MultiPolygon") {
-      const largestPolygon = input.geometry.coordinates.forEach((coords) => {
-        result.push(...coords);
-      });
-    } else if (input.geometry && input.geometry.type === "Polygon") {
-      result.push(...input.geometry.coordinates);
-    }
     // Array of coords or lists
-    else if (Array.isArray(input) && input.length) {
+    if (Array.isArray(input) && input.length) {
       // array of coords
       if (Array.isArray(input[0])) {
         result = input;
@@ -153,7 +148,7 @@ function toCoordinates(input) {
     console.error(
       `Failed to convert ${JSON.stringify(
         input
-      )} to coordinates, reason: ${err}`
+      )} to coordinates. Accepted format: locationId list, coordinates list or stringId`
     );
     return null;
   }
@@ -162,7 +157,7 @@ function toCoordinates(input) {
 /**
  * Converts a geometry into a list of locationIds
  *
- * @param {*} input, coordinates, locationIds, polygon or stringId
+ * @param {*} input, coordinates, locationIds or stringId
  * @param {*} locationIdPrecision
  */
  function toLocationIds(input, locationIdPrecision = 9) {
@@ -182,7 +177,7 @@ function toCoordinates(input) {
     console.error(
       `Failed to convert ${JSON.stringify(
         input
-      )} to location ids, reason: ${err}`
+      )} to location ids. Accepted format: coordinates list, locationId list or stringId`
     );
     return null;
   }
@@ -348,14 +343,12 @@ function _toTurfPolygon(inputPolygon) {
 
   try {
     // If the polygon is a GeoJSON feature
-    if (inputPolygon.features) {
-      if (inputPolygon.features.length) {
+    if (inputPolygon.features && inputPolygon.features.length) {
           polygons.push(turfHelpers.polygon(
           inputPolygon.features[0].geometry.coordinates.map((arr) =>
             arr.map((coords) => [coords[1], coords[0]])
           )
           ));
-      }
     }
     else if (inputPolygon.geometry && inputPolygon.geometry.type === "MultiPolygon") {
         const largestPolygon = inputPolygon.geometry.coordinates.forEach(coords => {

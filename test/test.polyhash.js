@@ -80,50 +80,6 @@ describe("Polyhash", function () {
     expect(coords).to.eql(expected);
   });
 
-  it("toCoordinates(polygon) should convert a polygon to a list of coordinates", function () {
-    const polygon = {
-      type: "FeatureCollection",
-      features: [
-        {
-          id: "46c5c3d3204d8afa8897daeffe91ebc9",
-          type: "Feature",
-          properties: {},
-          geometry: {
-            coordinates: [
-              [
-                [24.709158754793236, 46.77376085206123],
-                [24.711213562504298, 46.77260731634826],
-                [24.707912396016837, 46.772722671031545],
-                [24.709158754793236, 46.77376085206123],
-              ],
-              [
-                [24.709158754793236, 46.773414793941726],
-                [24.70865347420778, 46.773091804357335],
-                [24.70952929388872, 46.77302259205115],
-                [24.709158754793236, 46.773414793941726],
-              ],
-            ],
-            type: "Polygon",
-          },
-        },
-      ],
-    };
-
-    const expected = [
-      [24.709158754793236, 46.77376085206123],
-      [24.711213562504298, 46.77260731634826],
-      [24.707912396016837, 46.772722671031545],
-      [24.709158754793236, 46.77376085206123],
-      [24.709158754793236, 46.773414793941726],
-      [24.70865347420778, 46.773091804357335],
-      [24.70952929388872, 46.77302259205115],
-      [24.709158754793236, 46.773414793941726],
-    ];
-
-    const coords = libPolyhash.toCoordinates(polygon);
-    expect(coords).to.eql(expected);
-  });
-
   it("toCoordinates(stringId) should convert a compressed stringId to a list of coordinates", function () {
     const stringId = "ygeowUWWj67K9jgCsheAEDoLg1AfAqUaIWWj6A==";
     const expected = [
@@ -162,50 +118,6 @@ describe("Polyhash", function () {
     const expected = ["hgnsbcc", "hgnsbcc", "hgnsbcc", "hgnsbf0"];
     const locationIds = libPolyhash.toLocationIds(coords, 7);
     expect(expected).to.eql(locationIds);
-  });
-
-  it("toLocationIds(polygon) should convert a polygon to a list of locationId", function () {
-    const polygon = {
-      type: "FeatureCollection",
-      features: [
-        {
-          id: "46c5c3d3204d8afa8897daeffe91ebc9",
-          type: "Feature",
-          properties: {},
-          geometry: {
-            coordinates: [
-              [
-                [24.709158754793236, 46.77376085206123],
-                [24.711213562504298, 46.77260731634826],
-                [24.707912396016837, 46.772722671031545],
-                [24.709158754793236, 46.77376085206123],
-              ],
-              [
-                [24.709158754793236, 46.773414793941726],
-                [24.70865347420778, 46.773091804357335],
-                [24.70952929388872, 46.77302259205115],
-                [24.709158754793236, 46.773414793941726],
-              ],
-            ],
-            type: "Polygon",
-          },
-        },
-      ],
-    };
-
-    const expected = [
-      "u83d46bsv",
-      "u83d46dnj",
-      "u83d44xyb",
-      "u83d46bsv",
-      "u83d46bdv",
-      "u83d46b31",
-      "u83d46bbt",
-      "u83d46bdv",
-    ];
-
-    const locationIdList = libPolyhash.toLocationIds(polygon);
-    expect(locationIdList).to.eql(expected);
   });
 
   it("toLocationIds(stringId) should convert a compressed stringId to a list of coordinates", function () {
