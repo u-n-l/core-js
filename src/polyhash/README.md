@@ -4,9 +4,24 @@ Encoding geographical areas as locationId based polygons. These polygons are far
 
 ## API
 
-### `toPolyhash`(points, precision)
+### `toCoordinates`(geometry, precision)
 
-Converts an array of LatLng coordinates to a locationId trie.
+Converts coordindates, locationIds, GeoJSON polygon or stringId to a list of coordinates
+The list of coordinates is flattened.
+
+```js
+const locationIds = ["tester", "testsp", "testsj", "testek", "tester"];
+
+const coordinates = tolocationIds(locationIds, 9);
+
+/*
+  coordinates = [[73.976,20.6955],[74.009,20.6955],[74.009,20.6845],[73.976,20.679],[73.976,20.6955]]
+*/
+```
+
+### `toLocationIds`(geometry, precision)
+
+Converts coordindates, locationIds, GeoJSON polygon or stringId to a list of locationIds
 
 ```js
 const coordinates = [
@@ -17,16 +32,36 @@ const coordinates = [
   [ 20.6955, 73.976 ]  // tester
 ];
 
-const polyhash = toPolyhash(coordinates);
+const locationIds = tolocationIds(coordinates, 9);
 
 /*
-  polyhash = [{precision:6, data:['tester','sp','j','ek','er']}]
+  locationIds = ["umnsyfyj2", "umntnbyj8", "umntn8vvx", "umnsydcvr", "umnsyfyj2"]
 */
 ```
 
-### `toCluster`(points, precision)
+### `toPolyhash`(geometry, precision)
 
-Convert a polygon to a cluster of locationIds
+Converts coordindates, locationIds, GeoJSON polygon or stringId to a compressed string
+
+```js
+const coordinates = [
+  [ 20.6955, 73.976 ], // tester
+  [ 20.6955, 74.009 ], // testsp
+  [ 20.6845, 74.009 ], // testsj
+  [ 20.679, 73.976 ],  // testek
+  [ 20.6955, 73.976 ]  // tester
+];
+
+const polyhash = toPolyhash(coordinates, 9);
+
+/*
+  polyhash = "y0mow8c8jEZUKeRoENt+mHjC29xzyMQ="
+*/
+```
+
+### `toCluster`(geometry, precision)
+
+Fill a geometry with a cluster of locationIds. The geometry must be a closed polygon and can be in the form of coordindates, locationIds, GeoJSON polygon or stringId.
 
 ```js
 const coordinates = [
@@ -39,7 +74,7 @@ const coordinates = [
 const cluster = toCluster(coordinates, 6);
 
 /*
-cluster = [{precision:6, data:["testek","m","q","r","s","t","v","w","x","y","z","sj","n","p"]}]
+cluster = ["umnsyd","umnsye","umnsyf","umnsyg","umnsys","umnsyt","umnsyu","umnsyv","umnsyw","umnsyx","umnsyy","umnsyz","umntn8","umntnb"]
 */
 ```
 
@@ -80,33 +115,33 @@ Passing GeoJson polygon
 const cluster = toCluster(polygon, 6);
 
 /*
-cluster = [{precision:6, data:["testek","m","q","r","s","t","v","w","x","y","z","sj","n","p"]}]
+cluster = ["testek","testem","testeq","tester","testes","testet","testev","testew","testex","testey","testez","testesj","testen","testep"]
 */
 ```
 
-### `compressPolyhash`(polyhash)
+### `compress`(locationIds)
 
 Compress a polyhash and return in base64 format.
 
 ```js
-const polyhash = ['tester','sp','j','ek','er'];
-const compressed = compressPolyhash(polyhash);
+const polyhash = ['tester','testsp','testsj','testek','tester'];
+const compressed = compress(locationIds);
 
 /*
   compressed = 'ZNYZN3Y1xNyA'
 */
 ```
 
-### `decompressPolyhash`(compressedPolyhash)
+### `decompress`(stringId)
 
 Decompress a polyhash.
 
 ```js
 const compressedPolyhash = 'ZNYZN3Y1xNyA';
-const polyhash = decompressPolyhash(compressedPolyhash);
+const polyhash = decompress(compressedPolyhash);
 
 /*
-  polyhash = ['tester','sp','j','ek']
+  polyhash = ['tester','testsp','testsj','testek']
 */
 ```
 
@@ -115,7 +150,7 @@ const polyhash = decompressPolyhash(compressedPolyhash);
 Convert a polyhash back into coordinates.
 
 ```js
-const polyhash = ['tester','sp','j','ek','er'];
+const polyhash = ['tester','testsp','testsj','testek','tester'];
 const points = toCoordinates(polyhash);
 
 /*

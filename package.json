@@ -3,7 +3,7 @@
   "description": "The core SDK for UNL Location Services",
   "homepage": "https://unl.global",
   "author": "Emre Turan <emre@unl.global>",
-  "version": "3.0.0-alpha.1",
+  "version": "3.0.0-alpha.2",
   "license": "MIT",
   "main": "unl-core.js",
   "repository": {
@@ -119,12 +119,13 @@
     }
   },
   "dependencies": {
+    "@turf/bbox-polygon": "^6.3.0",
     "@turf/boolean-contains": "^6.3.0",
     "@turf/boolean-disjoint": "^6.3.0",
     "@turf/boolean-overlap": "^6.3.0",
     "@turf/helpers": "^6.3.0",
     "@turf/intersect": "^6.3.0",
-    "@turf/meta": "^6.3.0",
-    "@turf/bbox-polygon": "^6.3.0"
+    "@turf/invariant": "^6.3.0",
+    "@turf/meta": "^6.3.0"
   }
 }
