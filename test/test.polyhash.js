@@ -352,11 +352,11 @@ describe("Polyhash", function () {
   it("toCluster(list of coords) should convert precise bounding box a polyhash", function () {
     //Arrange
     const boundingBox = [
-      [4.9143218994140624, 52.374229431152345],
-      [4.9143218994140624, 52.374207973480224],
-      [4.914364814758302,  52.374207973480224],
-      [4.914364814758302,  52.374229431152345],
-      [4.9143218994140624, 52.374229431152345]
+      [4.914321899414, 52.374229431152],
+      [4.914321899414, 52.374207973480],
+      [4.914364814758, 52.374207973480],
+      [4.914364814758, 52.374229431152],
+      [4.914321899414, 52.374229431152]
     ];
     const expected = [
       "u173zy6tbp","u173zy6tbr","u173zy6tbx","u173zy6tbz",
@@ -369,8 +369,8 @@ describe("Polyhash", function () {
     const cluster = libPolyhash.toCluster(boundingBox, 10);
     
     //Assert
-    cluster.sort()
-    expected.sort()
+    cluster.sort();
+    expected.sort();
     expect(cluster).to.eql(expected);
   });
 
