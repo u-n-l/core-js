@@ -566,7 +566,7 @@ function groupByPrefix(locationIds) {
 
 // Return true if polygon1 intersects polygon2
 function _isIntersecting(polygon1, polygon2) {
-  return !!turfIntersect(polygon1, polygon2)
+  return !turfBooleanDisjoint(polygon1, polygon2)
 }
 
 // Return true of polygon2 is inside polygon1
