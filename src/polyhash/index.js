@@ -1,5 +1,3 @@
-import { Buffer } from "buffer";
-
 const unl = require("../core");
 const turfBooleanContains = require("@turf/boolean-contains").default;
 const turfBooleanOverlap = require("@turf/boolean-overlap").default;
