@@ -30,7 +30,7 @@
     "chai": "^4.0.0",
     "eslint": "^6.0.0",
     "esm": "^3.0.0",
-    "mocha": "^6.2.3"
+    "mocha": "^10.7.3"
   },
   "eslintConfig": {
     "env": {
